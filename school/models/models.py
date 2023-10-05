@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 
-
+# ps aux | grep odoo
 class student(models.Model):
      _name = 'school.student'
      _description = 'The students'
@@ -51,5 +51,13 @@ class qualification(models.Model):
      _name = 'school.qualification'
 
      nota = fields.Float()
-     student = fields.Many2one('school.student', string='Tutor', ondelete='set null')
+     student = fields.Many2one('school.student', string='Alumne', ondelete='set null')
+     passes = fields.Boolean(compute="_get_passes")
+
+
+     @api.depends("nota")
+     def _get_passes(self):
+          for q in self:
+               print(q, self)
+               q.passes = q.nota >= 5
 
