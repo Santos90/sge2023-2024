@@ -16,13 +16,38 @@
 -->
 
     <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="odoogame.action_window">
-      <field name="name">odoogame window</field>
-      <field name="res_model">odoogame.odoogame</field>
+
+    <record model="ir.actions.act_window" id="odoogame.action_player">
+      <field name="name">Gestión jugadores</field>
+      <field name="res_model">odoogame.player</field>
       <field name="view_mode">tree,form</field>
     </record>
--->
+
+    <record model="ir.actions.act_window" id="odoogame.action_server">
+      <field name="name">Gestión servidores</field>
+      <field name="res_model">odoogame.server</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_galaxy">
+      <field name="name">Gestión galaxias</field>
+      <field name="res_model">odoogame.galaxy</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_star">
+      <field name="name">Gestión estrellas</field>
+      <field name="res_model">odoogame.star</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_planet">
+      <field name="name">Gestión planetas</field>
+      <field name="res_model">odoogame.planet</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
 
     <!-- server action to the one above -->
 <!--
@@ -41,20 +66,26 @@
 -->
 
     <!-- Top menu item -->
-<!--
-    <menuitem name="odoogame" id="odoogame.menu_root"/>
--->
+
+    <menuitem name="ODOOGAME" id="odoogame.menu_root"/>
+
     <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="odoogame.menu_1" parent="odoogame.menu_root"/>
+
+    <menuitem name="Gestión" id="odoogame.menu_gestion" parent="odoogame.menu_root"/>
     <menuitem name="Menu 2" id="odoogame.menu_2" parent="odoogame.menu_root"/>
--->
+
     <!-- actions -->
-<!--
-    <menuitem name="List" id="odoogame.menu_1_list" parent="odoogame.menu_1"
-              action="odoogame.action_window"/>
-    <menuitem name="Server to list" id="odoogame" parent="odoogame.menu_2"
+    <menuitem name="Servers" id="odoogame.menu_gestion_server" parent="odoogame.menu_gestion"
               action="odoogame.action_server"/>
--->
+    <menuitem name="Players" id="odoogame.menu_gestion_player" parent="odoogame.menu_gestion"
+              action="odoogame.action_player"/>
+    <menuitem name="Galaxys" id="odoogame.menu_gestion_galaxy" parent="odoogame.menu_gestion"
+              action="odoogame.action_galaxy"/>
+    <menuitem name="Stars" id="odoogame.menu_gestion_star" parent="odoogame.menu_gestion"
+              action="odoogame.action_star"/>
+    <menuitem name="Planets" id="odoogame.menu_gestion_planet" parent="odoogame.menu_gestion"
+              action="odoogame.action_planet"/>
+
+
   </data>
 </odoo>

@@ -21,4 +21,4 @@ class topic(models.Model):
      _name = 'school.topic'
      _description = 'Topics'
 
-     name = fields.char()
+     name = fields.Char()

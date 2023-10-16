@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_odoogame_odoogame,odoogame.odoogame,model_odoogame_odoogame,base.group_user,1,1,1,1
+access_odoogame_player,odoogame.player,model_odoogame_player,base.group_user,1,1,1,1
+access_odoogame_server,odoogame.server,model_odoogame_server,base.group_user,1,1,1,1
+access_odoogame_galaxy,odoogame.galaxy,model_odoogame_galaxy,base.group_user,1,1,1,1
+access_odoogame_star,odoogame.star,model_odoogame_star,base.group_user,1,1,1,1
+access_odoogame_planet,odoogame.planet,model_odoogame_planet,base.group_user,1,1,1,1
