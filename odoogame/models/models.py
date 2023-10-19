@@ -86,7 +86,7 @@ class planet(models.Model):
     fosiles = fields.Float(string='Comb. fósiles')
 
     #Rel 4
-    edificios_construidos = fields.One2many('odoogame.constructed_building', string='Edificios construidos')
+    #edificios_construidos = fields.One2many('odoogame.constructed_building', 'planeta',  string='Edificios construidos')
 
 class building_type(models.Model):
     _name = 'odoogame.building_type'
@@ -111,18 +111,49 @@ class building_type(models.Model):
     coste_cobre = fields.Float(string='Coste de Cobre')
     coste_plata = fields.Float(string='Coste de Plata')
     coste_oro = fields.Float(string='Coste de Oro')
-    tiempo_construccion = fields.Float(string='Tiempo necesario para su construcción')
+    tiempo_construccion = fields.Integer(string='Tiempo necesario para su construcción')
 
 class constructed_building(models.Model):
     _name = 'odoogame.constructed_building'
     _description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
     name = fields.Char(required=True)
     #Rel 4
-    planeta = fields.Many2one('odoogame.planet', 'edificios_construidos')
+    planeta = fields.Many2one('odoogame.planet', 'Planeta')
 
     estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'), ('4', 'En reparación'), ('5', 'Destruido')])
     vida_actual = fields.Float(string='Coste de Oro')
     nivel_produccion = fields.Integer()
+    nivel_almacen = fields.Integer()
+
+class starship_type(models.Model):
+    _name = 'odoogame.starship_type'
+    _description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
+    name = fields.Char(required=True)
+
+
+    coste_hierro = fields.Float(string='Coste de hierro')
+    coste_cobre = fields.Float(string='Coste de Cobre')
+    coste_plata = fields.Float(string='Coste de Plata')
+    coste_oro = fields.Float(string='Coste de Oro')
+    tiempo_construccion = fields.Integer(string='Tiempo necesario para su construcción')
+
+
+    vida_inicial = fields.Float(string='Vida inicial edificio', help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
+    tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Deuterio')])
+    energia_funcionamiento = fields.Float(string='Energia')
+
+    ataque = fields.Float(string='Ataque de la unidad')
+    defensa = fields.Float(string='Defensa de la unidad')
+
+class constructed_starship(models.Model):
+    _name = 'odoogame.constructed_starship'
+    _description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
+    name = fields.Char(required=True)
+    # Rel 4
+    player = fields.Many2one('odoogame.player', 'Jugador')
+
+    estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido')])
+    vida_actual = fields.Float(string='Coste de Oro')
     nivel_almacen = fields.Integer()
 
     #tiempo_reparacion = fields.datetime(compute=)

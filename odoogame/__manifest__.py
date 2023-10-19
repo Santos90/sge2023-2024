@@ -27,6 +27,8 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'demo/building_type',
+        'demo/starship_type',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -1,34 +1,5 @@
 <odoo>
     <data>
-        <record id="odoogame_galaxia_via_lactea" model="odoogame.galaxy">
-            <field name="name">Vía Láctea</field>
-        </record>
-
-        <record id="odoogame_star_sol" model="odoogame.star">
-            <field name="name">Sol</field>
-            <field name="galaxy" ref="odoogame_galaxia_via_lactea"/>
-        </record>
-
-        <record id="odoogame_planeta_mercurio" model="odoogame.planet">
-            <field name="name">Mercurio</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
-        <record id="odoogame_planeta_venus" model="odoogame.planet">
-            <field name="name">Venus</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
-        <record id="odoogame_planeta_tierra" model="odoogame.planet">
-            <field name="name">Tierra</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
-        <record id="odoogame_planeta_marte" model="odoogame.planet">
-            <field name="name">Marte</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
 
         <record id="odoogame_edificio_mina_hierro" model="odoogame.building_type">
             <field name="name">Mina de hierro</field>

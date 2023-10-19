@@ -47,6 +47,31 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="odoogame.action_building_type">
+      <field name="name">Gestión Tipos de Edificios</field>
+      <field name="res_model">odoogame.building_type</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_constructed_building">
+      <field name="name">Gestión Edificios Construidos</field>
+      <field name="res_model">odoogame.constructed_building</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <record model="ir.actions.act_window" id="odoogame.action_starship_type">
+      <field name="name">Gestión Tipos de Edificios</field>
+      <field name="res_model">odoogame.starship_type</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_constructed_starship">
+      <field name="name">Gestión Edificios Construidos</field>
+      <field name="res_model">odoogame.constructed_starship</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
 
 
     <!-- server action to the one above -->
@@ -85,7 +110,15 @@
               action="odoogame.action_star"/>
     <menuitem name="Planets" id="odoogame.menu_gestion_planet" parent="odoogame.menu_gestion"
               action="odoogame.action_planet"/>
+    <menuitem name="Tipo Edificio" id="odoogame.menu_gestion_building_type" parent="odoogame.menu_gestion"
+              action="odoogame.action_building_type"/>
+    <menuitem name="Edificios construidos" id="odoogame.menu_gestion_constructed_building" parent="odoogame.menu_gestion"
+              action="odoogame.action_constructed_building"/>
 
+    <menuitem name="Tipos de Naves" id="odoogame.menu_gestion_starship_type" parent="odoogame.menu_gestion"
+              action="odoogame.action_starship_type"/>
+    <menuitem name="Naves construidas" id="odoogame.menu_gestion_constructed_starship" parent="odoogame.menu_gestion"
+              action="odoogame.action_constructed_starship"/>
 
   </data>
 </odoo>

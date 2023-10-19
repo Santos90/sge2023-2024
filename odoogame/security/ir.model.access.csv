@@ -4,3 +4,7 @@ access_odoogame_server,odoogame.server,model_odoogame_server,base.group_user,1,1
 access_odoogame_galaxy,odoogame.galaxy,model_odoogame_galaxy,base.group_user,1,1,1,1
 access_odoogame_star,odoogame.star,model_odoogame_star,base.group_user,1,1,1,1
 access_odoogame_planet,odoogame.planet,model_odoogame_planet,base.group_user,1,1,1,1
+access_odoogame_building_type,odoogame.building_type,model_odoogame_building_type,base.group_user,1,1,1,1
+access_odoogame_constructed_building,odoogame.constructed_building,model_odoogame_constructed_building,base.group_user,1,1,1,1
+access_odoogame_starship_type,odoogame.starship_type,model_odoogame_starship_type,base.group_user,1,1,1,1
+access_odoogame_constructed_starship,odoogame.constructed_starship,model_odoogame_constructed_starship,base.group_user,1,1,1,1
