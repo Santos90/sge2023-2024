@@ -38,12 +38,12 @@ class player(models.Model):
       # Si no el posem, es recalcula sols al recarregar el action.
       def _recuento_recursos(self):
               for p in self.planetas:
-                  self.hierro_total += p.hierro
-                  self.cobre_total += p.cobre
-                  self.plata_total += p.plata
-                  self.oro_total += p.oro
-                  self.deuterio_total += p.deuterio
-                  self.fosiles_total += p.fosiles
+                  p.hierro_total += p.hierro
+                  p.cobre_total += p.cobre
+                  p.plata_total += p.plata
+                  p.oro_total += p.oro
+                  p.deuterio_total += p.deuterio
+                  p.fosiles_total += p.fosiles
 
 
 class galaxy(models.Model):

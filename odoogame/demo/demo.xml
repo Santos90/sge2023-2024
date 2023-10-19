@@ -1,30 +1,35 @@
 <odoo>
     <data>
-<!--
-          <record id="object0" model="odoogame.odoogame">
-            <field name="name">Object 0</field>
-            <field name="value">0</field>
-          </record>
+        <record id="odoogame_galaxia_via_lactea" model="odoogame.galaxy">
+            <field name="name">Vía Láctea</field>
+        </record>
 
-          <record id="object1" model="odoogame.odoogame">
-            <field name="name">Object 1</field>
-            <field name="value">10</field>
-          </record>
+        <record id="odoogame_star_sol" model="odoogame.star">
+            <field name="name">Sol</field>
+            <field name="galaxy" ref="odoogame_galaxia_via_lactea"/>
+        </record>
 
-          <record id="object2" model="odoogame.odoogame">
-            <field name="name">Object 2</field>
-            <field name="value">20</field>
-          </record>
+        <record id="odoogame_planeta_mercurio" model="odoogame.planet">
+            <field name="name">Mercurio</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
 
-          <record id="object3" model="odoogame.odoogame">
-            <field name="name">Object 3</field>
-            <field name="value">30</field>
-          </record>
+        <record id="odoogame_planeta_venus" model="odoogame.planet">
+            <field name="name">Venus</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
 
-          <record id="object4" model="odoogame.odoogame">
-            <field name="name">Object 4</field>
-            <field name="value">40</field>
-          </record>
--->
+        <record id="odoogame_planeta_tierra" model="odoogame.planet">
+            <field name="name">Tierra</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
+
+        <record id="odoogame_planeta_marte" model="odoogame.planet">
+            <field name="name">Marte</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
+
+
+
     </data>
 </odoo>
