@@ -138,7 +138,7 @@ class starship_type(models.Model):
     tiempo_construccion = fields.Integer(string='Tiempo necesario para su construcción')
 
 
-    vida_inicial = fields.Float(string='Vida inicial edificio', help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
+    vida_inicial = fields.Float(string='Vida inicial de la nave', help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
     tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Deuterio')])
     energia_funcionamiento = fields.Float(string='Energia')
 
