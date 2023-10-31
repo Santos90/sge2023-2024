@@ -2,55 +2,6 @@
   <data>
     <!-- explicit list view definition -->
 
-    <record model="ir.ui.view" id="odoogame.planets_list">
-      <field name="name">Planets list</field>
-      <field name="model">odoogame.planet</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="jugador"/>
-          <field name="hierro"/>
-          <field name="cobre"/>
-          <field name="plata"/>
-          <field name="oro"/>
-          <field name="fosiles"/>
-          <field name="deuterio"/>
-        </tree>
-      </field>
-    </record>
-
-
-    <record model="ir.ui.view" id="odoogame.planet_form">
-      <field name="name">Planet form</field>
-      <field name="model">odoogame.planet</field>
-      <field name="arch" type="xml">
-        <form string="Course Form">
-          <sheet>
-            <group string="Ingo básica">
-              <field name="name"/>
-                            <field name="jugador"/>
-              <field name="star"/>
-              <field name="galaxy"/>
-
-            </group>
-            <group string="Recursos">
-
-
-              <field name="hierro"/>
-              <field name="cobre"/>
-              <field name="plata"/>
-              <field name="oro"/>
-              <field name="fosiles"/>
-              <field name="deuterio"/>
-            </group>
-          </sheet>
-        </form>
-
-
-      </field>
-    </record>
-
-
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="odoogame.action_player">
@@ -96,13 +47,13 @@
     </record>
 
     <record model="ir.actions.act_window" id="odoogame.action_starship_type">
-      <field name="name">Gestión Tipos de Edificios</field>
+      <field name="name">Gestión Tipos de Naves</field>
       <field name="res_model">odoogame.starship_type</field>
       <field name="view_mode">tree,form</field>
     </record>
 
     <record model="ir.actions.act_window" id="odoogame.action_constructed_starship">
-      <field name="name">Gestión Edificios Construidos</field>
+      <field name="name">Gestión Naves Construidos</field>
       <field name="res_model">odoogame.constructed_starship</field>
       <field name="view_mode">tree,form</field>
     </record>

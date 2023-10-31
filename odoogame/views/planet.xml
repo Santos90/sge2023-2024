@@ -1,0 +1,76 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="odoogame.planets_list">
+            <field name="name">Planets list</field>
+            <field name="model">odoogame.planet</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="jugador"/>
+                    <field name="hierro"/>
+                    <field name="cobre"/>
+                    <field name="plata"/>
+                    <field name="oro"/>
+                    <field name="fosiles"/>
+                    <field name="deuterio"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.planet_form">
+            <field name="name">Planet form</field>
+            <field name="model">odoogame.planet</field>
+            <field name="arch" type="xml">
+                <form string="Course Form">
+                    <sheet>
+                        <group string="Información básica">
+                            <group>
+                                <field name="name"/>
+                                <field name="jugador"/>
+
+                            </group>
+                            <group>
+                                <field name="star"/>
+                                <field name="galaxy"/>
+                            </group>
+
+
+                        </group>
+
+                        <group string="Recursos Totales">
+
+
+                            <group string="Metales: ">
+
+                                <field name="hierro"/>
+                                <field name="cobre"/>
+                                <field name="plata"/>
+                                <field name="oro"/>
+                            </group>
+                            <group string="Combustibles:">
+
+                                <field name="fosiles"/>
+                                <field name="deuterio"/>
+                            </group>
+
+                        </group>
+
+                        <notebook>
+                            <page string="Edificios">
+                                <field name="edificios"/>
+                            </page>
+                            <page string="Naves">
+                                <field name="naves"/>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                </form>
+
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
