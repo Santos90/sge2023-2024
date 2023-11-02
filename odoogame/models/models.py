@@ -221,8 +221,8 @@ class battle(models.Model):
 
 
 
-    start = fields.Datetime()
-    duration = fields.Integer(default=8)
+    start = fields.Datetime(string='Inicio')
+    duration = fields.Integer(default=8, string='Fin (horas)')
 
     atacante = fields.Many2one('odoogame.planet', string='Atacante')
     defensor = fields.Many2one('odoogame.planet', string='Defensor')

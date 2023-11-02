@@ -1,5 +1,23 @@
 <odoo>
     <data>
+
+
+
+ <record model="ir.ui.view" id="odoogame.battle_calendar">
+            <field name="name">Calendario Batallas</field>
+            <field name="model">odoogame.battle</field>
+            <field name="arch" type="xml">
+                <calendar string="Session Calendar"
+                          date_start="start"
+                          date_delay="duration"
+                          color="atacante">
+                    <field name="atacante"/>
+                    <field name="defensor"/>
+                </calendar>
+            </field>
+        </record>
+
+
         <record model="ir.ui.view" id="odoogame.battle_list">
             <field name="name">Battle list</field>
             <field name="model">odoogame.battle</field>
@@ -51,21 +69,6 @@
         </record>
 
 
-        <record model="ir.ui.view" id="odoogame.battle_calendar">
-            <field name="name">session.calendar</field>
-            <field name="model">odoogame.battle</field>
-            <field name="arch" type="xml">
-                <calendar string="Calendario de Batallas"
-                          date_start="start"
-                          date_delay="duration"
-                          day_length="24"
-                          color="atacante">
-                    <field name="start"/>
-                    <field name="atacante"/>
-                    <field name="defensor"/>
-                </calendar>
-            </field>
-        </record>
 
     </data>
 </odoo>
