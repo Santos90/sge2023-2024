@@ -28,11 +28,12 @@
                             <group>
                                 <field name="name"/>
                                 <field name="jugador"/>
-
+                                <field name="level"/>
                             </group>
                             <group>
                                 <field name="star"/>
                                 <field name="galaxy"/>
+                                <button name="update_level" type="object" string="Update Level" class="oe_highlight" icon="fa-level-up"/>
                             </group>
 
 
@@ -65,6 +66,7 @@
                             </page>
 
                         </notebook>
+                        <button name="crear_edificio" type="object" string="Create" class="oe_highlight" icon="fa-level-up"/>
                     </sheet>
                 </form>
 

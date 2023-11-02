@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # https://github.com/xxjcaxx
 
+import random
 from odoo import models, fields, api
 import math
 from odoo.exceptions import ValidationError
@@ -28,12 +29,12 @@ class player(models.Model):
     # Rel 3. Un jugador ocupa palnetas
     planetas = fields.One2many('odoogame.planet', 'jugador', 'Planetas', delegate=True)
 
-    hierro_total = fields.Float(string="Hierro", compute='_recuento_recursos')
-    cobre_total = fields.Float(string="Cobre", compute='_recuento_recursos')
-    plata_total = fields.Float(string="Plata", compute='_recuento_recursos')
-    oro_total = fields.Float(string="Oro", compute='_recuento_recursos')
-    deuterio_total = fields.Float(string="Deuterio", compute='_recuento_recursos')
-    fosiles_total = fields.Float(string="Comb. Fósiles", compute='_recuento_recursos')
+    hierro_total = fields.Integer(string="Hierro", compute='_recuento_recursos')
+    cobre_total = fields.Integer(string="Cobre", compute='_recuento_recursos')
+    plata_total = fields.Integer(string="Plata", compute='_recuento_recursos')
+    oro_total = fields.Integer(string="Oro", compute='_recuento_recursos')
+    deuterio_total = fields.Integer(string="Deuterio", compute='_recuento_recursos')
+    fosiles_total = fields.Integer(string="Comb. Fósiles", compute='_recuento_recursos')
 
     # i sempre es recalcula quan executem un action que el mostra
 
@@ -89,7 +90,7 @@ class planet(models.Model):
     _description = 'Planeta que orbita una estrella.'
 
     name = fields.Char(required=True)
-
+    level = fields.Integer(default=1)
     # Rel 2. Una estrella tiene muchos planetas
     star = fields.Many2one('odoogame.star', string='Estrella', delegate=False, ondelete='restrict')
     #Rel 3. Un jugador ocupa palnetas
@@ -101,28 +102,47 @@ class planet(models.Model):
     edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos")
     naves = fields.One2many('odoogame.constructed_starship', 'ubicacion', string="Naves estacionadas")
 
+    hierro = fields.Integer(string='Hierro')
+    cobre = fields.Integer(string='Cobre')
+    plata = fields.Integer(string='Plata')
+    oro = fields.Integer(string='Oro')
+    deuterio = fields.Integer(string='Deuterio')
+    fosiles = fields.Integer(string='Comb. fósiles')
 
-    hierro = fields.Float(string='Hierro')
-    cobre = fields.Float(string='Cobre')
-    plata = fields.Float(string='Plata')
-    oro = fields.Float(string='Oro')
-    deuterio = fields.Float(string='Deuterio')
-    fosiles = fields.Float(string='Comb. fósiles')
+    def update_level(self):
+        for p in self:
+            if p.hierro >= 100 and p.cobre >= 50:
+                p.hierro -= 100
+                p.cobre -= 50
+                p.level += 1
+
+    def crear_edificio(self):
+        for p in self:
+            building_types = self.env['odoogame.building_type'].search([]).ids
+            random.shuffle(building_types)
+            edificio = p.edificios.create({
+                "name": self.env['odoogame.building_type'].browse(building_types[0]).name,
+                "estado": "1",
+                "planeta": p.id,
+                "type": building_types[0]
+            })
+
+
 
 
 class building_type(models.Model):
     _name = 'odoogame.building_type'
-    _description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
+    _description = 'Tipos de edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
     name = fields.Char(required=True)
     icon = fields.Image(max_width=200, max_height=200)
 
-    gen_hierro = fields.Float(string='Producción de hierro')
-    gen_cobre = fields.Float(string='Producción de Cobre')
-    gen_plata = fields.Float(string='Producción de Plata')
-    gen_oro = fields.Float(string='Producción de Oro')
-    gen_deuterio = fields.Float(string='Producción de Deuterio')
-    gen_fosiles = fields.Float(string='Producción de Comb. fósiles')
-    gen_energia = fields.Float(strings='Produccion de W/s')
+    gen_hierro = fields.Integer(string='Producción de hierro')
+    gen_cobre = fields.Integer(string='Producción de Cobre')
+    gen_plata = fields.Integer(string='Producción de Plata')
+    gen_oro = fields.Integer(string='Producción de Oro')
+    gen_deuterio = fields.Integer(string='Producción de Deuterio')
+    gen_fosiles = fields.Integer(string='Producción de Comb. fósiles')
+    gen_energia = fields.Integer(strings='Produccion de W/s')
 
     vida_inicial = fields.Float(string='Vida inicial edificio', help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
     tipo_energia = fields.Selection([('1','Comb. Fósiles'),('2','Electricidad'),('3','Deuterio')])
@@ -130,10 +150,10 @@ class building_type(models.Model):
 
 
     #Costes de construcción
-    coste_hierro = fields.Float(string='Coste de hierro')
-    coste_cobre = fields.Float(string='Coste de Cobre')
-    coste_plata = fields.Float(string='Coste de Plata')
-    coste_oro = fields.Float(string='Coste de Oro')
+    coste_hierro = fields.Integer(string='Coste de hierro')
+    coste_cobre = fields.Integer(string='Coste de Cobre')
+    coste_plata = fields.Integer(string='Coste de Plata')
+    coste_oro = fields.Integer(string='Coste de Oro')
     tiempo_construccion = fields.Integer(string='Tiempo necesario para su construcción')
 
 class constructed_building(models.Model):
@@ -145,10 +165,12 @@ class constructed_building(models.Model):
 
     estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'), ('4', 'En reparación'), ('5', 'Destruido')])
     vida_actual = fields.Float(string='Coste de Oro')
-    nivel_produccion = fields.Integer()
-    nivel_almacen = fields.Integer()
+    nivel_produccion = fields.Integer(default=1)
+    nivel_almacen = fields.Integer(default=1)
 
     type = fields.Many2one('odoogame.building_type', string="Tipo de edificio")
+
+
 
 class starship_type(models.Model):
     _name = 'odoogame.starship_type'
@@ -157,10 +179,10 @@ class starship_type(models.Model):
 
 
 
-    coste_hierro = fields.Float(string='Coste de hierro')
-    coste_cobre = fields.Float(string='Coste de Cobre')
-    coste_plata = fields.Float(string='Coste de Plata')
-    coste_oro = fields.Float(string='Coste de Oro')
+    coste_hierro = fields.Integer(string='Coste de hierro')
+    coste_cobre = fields.Integer(string='Coste de Cobre')
+    coste_plata = fields.Integer(string='Coste de Plata')
+    coste_oro = fields.Integer(string='Coste de Oro')
     tiempo_construccion = fields.Integer(string='Tiempo necesario para su construcción')
 
 
@@ -180,7 +202,7 @@ class constructed_starship(models.Model):
 
     estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido')])
     vida_actual = fields.Float(string='Coste de Oro')
-    nivel_almacen = fields.Integer()
+    nivel_almacen = fields.Integer(default=1)
 
     ubicacion = fields.Many2one('odoogame.planet', 'Planeta')
     type = fields.Many2one('odoogame.starship_type', string="Tipo de nave")
