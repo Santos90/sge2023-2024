@@ -109,6 +109,10 @@ class planet(models.Model):
     deuterio = fields.Integer(string='Deuterio')
     fosiles = fields.Integer(string='Comb. fósiles')
 
+
+    ataques = fields.One2many('odoogame.battle', 'atacante', string='Batallas iniciadas')
+    defensas = fields.One2many('odoogame.battle', 'atacante', string='Ataques recibidos')
+
     def update_level(self):
         for p in self:
             if p.hierro >= 100 and p.cobre >= 50:
@@ -207,28 +211,28 @@ class constructed_starship(models.Model):
     ubicacion = fields.Many2one('odoogame.planet', 'Planeta')
     type = fields.Many2one('odoogame.starship_type', string="Tipo de nave")
 
+    ataque =  fields.Many2one('odoogame.battle', string='En ataque')
+
     #tiempo_reparacion = fields.datetime(compute=)
+
+class battle(models.Model):
+    _name = 'odoogame.battle'
+    _description = 'Ataque iniciado.'
+
+
+
+    start = fields.Datetime()
+    duration = fields.Integer(default=8)
+
+    atacante = fields.Many2one('odoogame.planet', string='Atacante')
+    defensor = fields.Many2one('odoogame.planet', string='Defensor')
+
+
+    flota_atacante = fields.One2many('odoogame.constructed_starship', 'ataque', string='Naves atacantes')
+
 """""
-class house(models.Model):
-    _name = 'odoogame.house'
-    _description = 'Familias que han destacado en las grandes naciones del mundo, ' \
-                   'aunque aquí son más conocidas como "casas" y cada una de ellas han c' \
-                   'reado un imperio que ha tenido repercusión en el desarrollo de la historia'
-
-    name = fields.Char()
-
-
-class city(models.Model):
-    _name = 'odoogame.player'
-    _description = 'odoogame.odoogame'
-
-    name = fields.Char()
-
-
-class player(models.Model):
-    _name = 'odoogame.player'
-    _description = 'odoogame.odoogame'
-
-    name = fields.Char()
-
-"""
+    @api.constraint('atacante', 'defensor')
+    def _comprobar_combatientes(self):
+        for b in self:
+            if b.atacante == b.defensor:
+"""""

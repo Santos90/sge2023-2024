@@ -58,7 +58,11 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-
+    <record model="ir.actions.act_window" id="odoogame.action_battle">
+      <field name="name">Gestión Batallas</field>
+      <field name="res_model">odoogame.battle</field>
+      <field name="view_mode">tree,form,calendar</field>
+    </record>
 
 
     <!-- server action to the one above -->
@@ -106,6 +110,9 @@
               action="odoogame.action_starship_type"/>
     <menuitem name="Naves construidas" id="odoogame.menu_gestion_constructed_starship" parent="odoogame.menu_gestion"
               action="odoogame.action_constructed_starship"/>
+
+    <menuitem name="Batallas" id="odoogame.menu_gestion_battle" parent="odoogame.menu_gestion"
+              action="odoogame.action_battle"/>
 
   </data>
 </odoo>

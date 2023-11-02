@@ -1,0 +1,71 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="odoogame.battle_list">
+            <field name="name">Battle list</field>
+            <field name="model">odoogame.battle</field>
+            <field name="arch" type="xml">
+                <tree>
+
+                    <field name="start"/>
+                    <field name="duration"/>
+                    <field name="atacante"/>
+                    <field name="defensor"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.battle_form">
+            <field name="name">Battle form</field>
+            <field name="model">odoogame.battle</field>
+            <field name="arch" type="xml">
+                <form string="Course Form">
+                    <sheet>
+                        <group string="Información básica">
+                            <group>
+
+                                <field name="start"/>
+                                <field name="duration"/>
+
+                            </group>
+                            <group>
+                                <field name="atacante"/>
+                                <field name="defensor"/>
+                            </group>
+
+
+                        </group>
+
+
+                        <notebook>
+                            <page string="FLota de ataque">
+                                <field name="flota_atacante"/>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                </form>
+
+
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.battle_calendar">
+            <field name="name">session.calendar</field>
+            <field name="model">odoogame.battle</field>
+            <field name="arch" type="xml">
+                <calendar string="Calendario de Batallas"
+                          date_start="start"
+                          date_delay="duration"
+                          day_length="24"
+                          color="atacante">
+                    <field name="start"/>
+                    <field name="atacante"/>
+                    <field name="defensor"/>
+                </calendar>
+            </field>
+        </record>
+
+    </data>
+</odoo>

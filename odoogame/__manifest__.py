@@ -26,10 +26,11 @@
     'data': [
         'security/ir.model.access.csv',
         'views/planet.xml', 'views/player.xml',
-        'views/views.xml',
         'views/templates.xml',
+        'views/battle.xml',
         'demo/building_type.xml',
         'demo/starship_type.xml',
+        'views/views.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

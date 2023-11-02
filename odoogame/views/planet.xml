@@ -74,5 +74,27 @@
             </field>
         </record>
 
+
+
+        <record model="ir.ui.view" id="odoogame.planets_search">
+            <field name="name">Planets list</field>
+            <field name="model">odoogame.planet</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="jugador"/>
+                    <field name="hierro"/>
+                    <field name="cobre"/>
+                    <field name="plata"/>
+                    <field name="oro"/>
+                    <field name="fosiles"/>
+                    <field name="deuterio"/>
+                </search>
+            </field>
+        </record>
+
+
+
+
     </data>
 </odoo>
