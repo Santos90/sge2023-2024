@@ -25,13 +25,19 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+
+        'views/building_type.xml',
+        'views/starship_type.xml',
         'views/planet.xml',
+        'views/constructed_building.xml',
+        'views/constructed_starship.xml',
         'views/player.xml',
         'views/battle.xml',
+        'views/views.xml',
+        'views/templates.xml',
+
         'demo/building_type.xml',
         'demo/starship_type.xml',
-        'views/views.xml',
-        'views/templates.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
