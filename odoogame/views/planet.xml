@@ -1,5 +1,7 @@
 <odoo>
     <data>
+
+
         <record model="ir.ui.view" id="odoogame.planets_list">
             <field name="name">Planets list</field>
             <field name="model">odoogame.planet</field>
@@ -60,22 +62,21 @@
                         <notebook>
                             <page string="Edificios">
                                 <field name="edificios"/>
+                                <button name="crear_edificio" type="object" string="Create" class="oe_highlight" icon="fa-level-up"/>
+                                <button name="recolectar_recursos" type="object" string="Recolectar recursos" class="oe_highlight" icon="fa-level-up"/>
                             </page>
                             <page string="Naves">
                                 <field name="naves"/>
                             </page>
 
                         </notebook>
-                        <button name="crear_edificio" type="object" string="Create" class="oe_highlight" icon="fa-level-up"/>
+
                     </sheet>
                 </form>
 
 
             </field>
         </record>
-
-
-
         <record model="ir.ui.view" id="odoogame.planets_search">
             <field name="name">Planets list</field>
             <field name="model">odoogame.planet</field>

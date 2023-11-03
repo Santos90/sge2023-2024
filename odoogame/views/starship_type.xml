@@ -1,0 +1,106 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="odoogame.starship_type_list">
+            <field name="name">starship_type list</field>
+            <field name="model">odoogame.starship_type</field>
+            <field name="arch" type="xml">
+                <tree>
+
+                    <field name="name"/>
+                    <field name="vida_inicial"/>
+                    <field name="tipo_energia"/>
+                    <field name="energia_funcionamiento"/>
+
+                    <field name="ataque"/>
+                    <field name="defensa"/>
+
+
+                    <field name="coste_hierro"/>
+                    <field name="coste_cobre"/>
+                    <field name="coste_plata"/>
+                    <field name="coste_oro"/>
+
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.starship_type_form">
+            <field name="name">starship_type form</field>
+            <field name="model">odoogame.starship_type</field>
+            <field name="arch" type="xml">
+                <form string="Course Form">
+                    <sheet>
+                        <group string="Información básica">
+                            <group>
+                                <field name="name"/>
+
+                                <field name="vida_inicial"/>
+                                <field name="tiempo_construccion"/>
+
+                            </group>
+                            <group>
+                                <field name="icon" widget="image" class="oe_avatar"/>
+
+                                <field name="tipo_energia"/>
+                                <field name="energia_funcionamiento"/>
+
+                            </group>
+
+
+                        </group>
+
+
+                        <group string="Coste recursos">
+
+
+                            <group>
+                                <field name="coste_hierro"/>
+                                <field name="coste_cobre"/>
+
+
+                            </group>
+                            <group>
+
+                                <field name="coste_plata"/>
+                                <field name="coste_oro"/>
+
+                            </group>
+
+                        </group>
+                    </sheet>
+                </form>
+
+
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.starship_type_search">
+            <field name="name">starship_type list</field>
+            <field name="model">odoogame.starship_type</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="vida_inicial"/>
+                    <field name="tipo_energia"/>
+                    <field name="energia_funcionamiento"/>
+                    <field name="tiempo_construccion"/>
+
+
+                    <field name="coste_hierro"/>
+                    <field name="coste_cobre"/>
+                    <field name="coste_plata"/>
+                    <field name="coste_oro"/>
+                </search>
+            </field>
+        </record>
+
+
+
+
+
+
+    </data>
+</odoo>

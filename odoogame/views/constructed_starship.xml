@@ -1,0 +1,121 @@
+<odoo>
+	<data>
+
+		<record model="ir.ui.view" id="odoogame.constructed_starship_list">
+			<field name="name">Tipos de Edificio</field>
+			<field name="model">odoogame.constructed_starship</field>
+			<field name="arch" type="xml">
+				<tree>
+
+					<field name="type"/>
+
+					<field name="ubicacion"/>
+					<field name="player"/>
+
+
+					<field name="estado"/>
+					<field name="vida_actual"/>
+
+					<field name="nivel_almacen"/>
+					<field name="atacando_en_batalla"/>
+
+				</tree>
+			</field>
+		</record>
+
+
+		<record model="ir.ui.view" id="odoogame.constructed_starship_form">
+			<field name="name">Tipo de Edificio</field>
+			<field name="model">odoogame.constructed_starship</field>
+			<field name="arch" type="xml">
+				<form string="Course Form">
+					<sheet>
+						<group string="Información básica">
+							<group>
+								<field name="type"/>
+
+								<field name="ubicacion"/>
+								<field name="player"/>
+
+							</group>
+							<group>
+								<field name="icon" widget="image" class="oe_avatar"/>
+
+					<field name="estado"/>
+					<field name="vida_actual"/>
+
+					<field name="atacando_en_batalla"/>
+
+							</group>
+						</group>
+
+						<group string="Atributos">
+							<group>
+
+								<field name="nivel_almacen"/>
+
+							</group>
+							<group>
+								<field name="vida_actual"/>
+
+
+							</group>
+
+						</group>
+
+
+<!--
+						<group string="Coste recursos">
+
+							<group>
+								<field name="coste_hierro"/>
+								<field name="coste_cobre"/>
+
+
+							</group>
+							<group>
+
+								<field name="coste_plata"/>
+								<field name="coste_oro"/>
+
+							</group>
+
+						</group>
+
+-->
+
+					</sheet>
+				</form>
+
+
+			</field>
+		</record>
+
+
+		<record model="ir.ui.view" id="odoogame.constructed_starship_search">
+			<field name="name">Tipos de Edificio</field>
+			<field name="model">odoogame.constructed_starship</field>
+			<field name="arch" type="xml">
+				<search>
+					<field name="type"/>
+
+					<field name="ubicacion"/>
+					<field name="player"/>
+
+					<field name="estado"/>
+					<field name="vida_actual"/>
+
+					<field name="nivel_almacen"/>
+					<field name="atacando_en_batalla"/>
+
+				</search>
+			</field>
+		</record>
+
+
+
+
+
+
+	</data>
+</odoo>
