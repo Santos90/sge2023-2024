@@ -57,7 +57,7 @@
 
                         <notebook>
                             <page string="FLota de ataque">
-                                <field name="flota_atacante"/>
+                                <field name="flotas_atacantes"/>
                             </page>
 
                         </notebook>

@@ -91,15 +91,15 @@
     <menuitem name="Menu 2" id="odoogame.menu_2" parent="odoogame.menu_root"/>
 
     <!-- actions -->
-    <menuitem name="Servers" id="odoogame.menu_gestion_server" parent="odoogame.menu_gestion"
+    <menuitem name="Servidores" id="odoogame.menu_gestion_server" parent="odoogame.menu_gestion"
               action="odoogame.action_server"/>
-    <menuitem name="Players" id="odoogame.menu_gestion_player" parent="odoogame.menu_gestion"
+    <menuitem name="Jugadores" id="odoogame.menu_gestion_player" parent="odoogame.menu_gestion"
               action="odoogame.action_player"/>
-    <menuitem name="Galaxys" id="odoogame.menu_gestion_galaxy" parent="odoogame.menu_gestion"
+    <menuitem name="Galaxias" id="odoogame.menu_gestion_galaxy" parent="odoogame.menu_gestion"
               action="odoogame.action_galaxy"/>
     <menuitem name="Stars" id="odoogame.menu_gestion_star" parent="odoogame.menu_gestion"
               action="odoogame.action_star"/>
-    <menuitem name="Planets" id="odoogame.menu_gestion_planet" parent="odoogame.menu_gestion"
+    <menuitem name="Planetas" id="odoogame.menu_gestion_planet" parent="odoogame.menu_gestion"
               action="odoogame.action_planet"/>
     <menuitem name="Tipo Edificio" id="odoogame.menu_gestion_building_type" parent="odoogame.menu_gestion"
               action="odoogame.action_building_type"/>

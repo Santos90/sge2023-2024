@@ -133,28 +133,32 @@ class planet(models.Model):
 				"type": building_types[0],
 				"vida_actual": self.env['odoogame.building_type'].browse(building_types[0]).vida_inicial
 			})
-			#controlar que tenga recursos suficientes !!!!!
-			p.hierro -= edificio.type.coste_hierro
-			p.cobre -= edificio.type.coste_cobre
-			p.plata -= edificio.type.coste_plata
-			p.oro -= edificio.type.coste_oro
 
+			if p.hierro >= edificio.type.coste_hierro and p.cobre >= edificio.type.coste_cobre and p.plata >= edificio.type.coste_plata and p.oro >= edificio.type.coste_oro:
+				p.hierro -= edificio.type.coste_hierro
+				p.cobre -= edificio.type.coste_cobre
+				p.plata -= edificio.type.coste_plata
+				p.oro -= edificio.type.coste_oro
+
+	# Recolecta los recursos que almacenan todos los edificios del planeta
 	def recolectar_recursos(self):
-		for p in self:
-			for e in p.edificios:
-				p.hierro += e.alm_hierro
-				p.cobre += e.alm_cobre
-				p.plata += e.alm_plata
-				p.oro += e.alm_oro
-				p.deuterio += e.alm_deuterio
-				p.fosiles += e.alm_fosiles
+		for planeta in self:
+			for edificio in planeta.edificios:
+				planeta.hierro += edificio.alm_hierro
+				planeta.cobre += edificio.alm_cobre
+				planeta.plata += edificio.alm_plata
+				planeta.oro += edificio.alm_oro
+				planeta.deuterio += edificio.alm_deuterio
+				planeta.fosiles += edificio.alm_fosiles
 
-				e.alm_hierro = 0
-				e.alm_cobre = 0
-				e.alm_plata = 0
-				e.alm_oro = 0
-				e.alm_deuterio = 0
-				e.alm_fosiles = 0
+				edificio.alm_hierro = 0
+				edificio.alm_cobre = 0
+				edificio.alm_plata = 0
+				edificio.alm_oro = 0
+				edificio.alm_deuterio = 0
+				edificio.alm_fosiles = 0
+
+
 class building_type(models.Model):
 	_name = 'odoogame.building_type'
 	_description = 'Tipos de edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
@@ -189,7 +193,6 @@ class constructed_building(models.Model):
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string='')
 	type = fields.Many2one('odoogame.building_type', string="Tipo de edificio")
 
-
 	vida_inicial = fields.Float(string='Vida inicial edificio',
 	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar',
 	                            related='type.vida_inicial')
@@ -213,6 +216,9 @@ class constructed_building(models.Model):
 	alm_deuterio = fields.Integer(string='Almacén de Deuterio')
 	alm_fosiles = fields.Integer(string='Almacén de Comb. fósiles')
 
+	# <------------   Computed segun nivel?  ------------------------->>
+
+	# Máximo almacenamiento
 	alm_hierro_max = fields.Integer(string='Almacén de hierro máximo', compute='_calculo_por_nivel')
 	alm_cobre_max = fields.Integer(string='Almacén de Cobre máximo', compute='_calculo_por_nivel')
 	alm_plata_max = fields.Integer(string='Almacén de Plata máximo', compute='_calculo_por_nivel')
@@ -220,16 +226,14 @@ class constructed_building(models.Model):
 	alm_deuterio_max = fields.Integer(string='Almacén de Deuterio máximo', compute='_calculo_por_nivel')
 	alm_fosiles_max = fields.Integer(string='Almacén de Comb. fósiles máximo', compute='_calculo_por_nivel')
 
-	# <------------  RELATEDS TIPO EDIFICIO. Computed segun nivel?  ------------------------->>
-	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string='')
 	# Generación recursos
-	gen_hierro = fields.Integer(string='Producción de hierro',  compute='_calculo_por_nivel')
-	gen_cobre = fields.Integer(string='Producción de Cobre',  compute='_calculo_por_nivel')
-	gen_plata = fields.Integer(string='Producción de Plata',  compute='_calculo_por_nivel')
-	gen_oro = fields.Integer(string='Producción de Oro',  compute='_calculo_por_nivel')
-	gen_deuterio = fields.Integer(string='Producción de Deuterio',  compute='_calculo_por_nivel')
-	gen_fosiles = fields.Integer(string='Producción de Comb. fósiles',  compute='_calculo_por_nivel')
-	gen_energia = fields.Integer(string='Produccion de W/s',  compute='_calculo_por_nivel')
+	gen_hierro = fields.Integer(string='Producción de hierro', compute='_calculo_por_nivel')
+	gen_cobre = fields.Integer(string='Producción de Cobre', compute='_calculo_por_nivel')
+	gen_plata = fields.Integer(string='Producción de Plata', compute='_calculo_por_nivel')
+	gen_oro = fields.Integer(string='Producción de Oro', compute='_calculo_por_nivel')
+	gen_deuterio = fields.Integer(string='Producción de Deuterio', compute='_calculo_por_nivel')
+	gen_fosiles = fields.Integer(string='Producción de Comb. fósiles', compute='_calculo_por_nivel')
+	gen_energia = fields.Integer(string='Produccion de W/s', compute='_calculo_por_nivel')
 	energia_funcionamiento = fields.Integer(string='Energia de funcionamiento', compute='_calculo_por_nivel')
 
 	# Costes de construcción
@@ -263,6 +267,23 @@ class constructed_building(models.Model):
 			e.tiempo_construccion = e.type.tiempo_construccion * math.log(e.nivel_produccion)
 			e.energia_funcionamiento = e.type.energia_funcionamiento * math.log(e.nivel_produccion)
 
+	def recolectar_recursos(self):
+
+		for edificio in self:
+			edificio.planeta.hierro += edificio.alm_hierro
+			edificio.planeta.cobre += edificio.alm_cobre
+			edificio.planeta.plata += edificio.alm_plata
+			edificio.planeta.oro += edificio.alm_oro
+			edificio.planeta.deuterio += edificio.alm_deuterio
+			edificio.planeta.fosiles += edificio.alm_fosiles
+
+			edificio.alm_hierro = 0
+			edificio.alm_cobre = 0
+			edificio.alm_plata = 0
+			edificio.alm_oro = 0
+			edificio.alm_deuterio = 0
+			edificio.alm_fosiles = 0
+
 
 class starship_type(models.Model):
 	_name = 'odoogame.starship_type'
@@ -270,7 +291,8 @@ class starship_type(models.Model):
 	name = fields.Char(required=True)
 	icon = fields.Image(max_width=300, max_height=300, string='')
 
-	vida_inicial = fields.Float(string='Vida inicial de la nave', help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
+	vida_inicial = fields.Float(string='Vida inicial de la nave',
+	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
 	tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Deuterio')])
 	energia_funcionamiento = fields.Float(string='Energia')
 
@@ -304,6 +326,13 @@ class constructed_starship(models.Model):
 
 # tiempo_reparacion = fields.datetime(compute=)
 
+class flota(models.Model):
+	_name = 'odoogame.flota'
+	_description = 'Flota de un jugador en un planeta'
+
+	planeta = fields.Many2one('odoogame.planet', string='Planeta')
+	naves = fields.One2many('odoogame.constructed_starship', 'atacando_en_batalla', string='Naves atacantes')
+
 
 class battle(models.Model):
 	_name = 'odoogame.battle'
@@ -315,7 +344,7 @@ class battle(models.Model):
 	atacante = fields.Many2one('odoogame.planet', string='Atacante')
 	defensor = fields.Many2one('odoogame.planet', string='Defensor')
 
-	flota_atacante = fields.One2many('odoogame.constructed_starship', 'atacando_en_batalla', string='Naves atacantes')
+	flotas_atacantes = fields.One2many('odoogame.flota', 'id', string='Flotas atacantes')
 
 
 """""
