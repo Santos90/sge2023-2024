@@ -189,6 +189,7 @@ class constructed_building(models.Model):
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string='')
 	type = fields.Many2one('odoogame.building_type', string="Tipo de edificio")
 
+
 	vida_inicial = fields.Float(string='Vida inicial edificio',
 	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar',
 	                            related='type.vida_inicial')
