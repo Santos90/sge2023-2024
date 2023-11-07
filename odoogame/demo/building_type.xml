@@ -222,6 +222,16 @@ Zwx7THf2nxvL6Gv+H8f4jsm00Pox16Q1OPp//9k=
             <field name="tiempo_construccion">5</field>
         </record>
 
+	    <record id="odoogame_edificio_mina_oro" model="odoogame.building_type">
+            <field name="name">Mina de oro</field>
+            <field name="gen_oro"> 50 </field>
+            <field name="vida_inicial">300</field>
+            <field name="coste_cobre">250</field>
+            <field name="coste_hierro">250</field>
+            <field name="coste_plata">50</field>
+            <field name="tiempo_construccion">5</field>
+        </record>
+
         <record id="odoogame_edificio_mina_fosiles" model="odoogame.building_type">
             <field name="name">Mina de carbón</field>
             <field name="gen_fosiles"> 50 </field>
@@ -230,10 +240,6 @@ Zwx7THf2nxvL6Gv+H8f4jsm00Pox16Q1OPp//9k=
             <field name="coste_hierro">150</field>
             <field name="tiempo_construccion">5</field>
         </record>
-
-
-
-
 
     </data>
 </odoo>

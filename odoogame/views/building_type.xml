@@ -42,6 +42,7 @@
                                 <field name="name"/>
 
                                 <field name="vida_inicial"/>
+                                <field name="tiempo_construccion"/>
 
                             </group>
                             <group>

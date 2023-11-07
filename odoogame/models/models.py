@@ -4,6 +4,8 @@
 import random
 from odoo import models, fields, api
 import math
+import logging
+_logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
 
@@ -186,6 +188,8 @@ class building_type(models.Model):
 	tiempo_construccion = fields.Integer(string='Tiempo necesario para su construcción')
 
 
+
+
 class constructed_building(models.Model):
 	_name = 'odoogame.constructed_building'
 	_description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
@@ -219,53 +223,70 @@ class constructed_building(models.Model):
 	# <------------   Computed segun nivel?  ------------------------->>
 
 	# Máximo almacenamiento
-	alm_hierro_max = fields.Integer(string='Almacén de hierro máximo', compute='_calculo_por_nivel')
-	alm_cobre_max = fields.Integer(string='Almacén de Cobre máximo', compute='_calculo_por_nivel')
-	alm_plata_max = fields.Integer(string='Almacén de Plata máximo', compute='_calculo_por_nivel')
-	alm_oro_max = fields.Integer(string='Almacén de Oro máximo', compute='_calculo_por_nivel')
-	alm_deuterio_max = fields.Integer(string='Almacén de Deuterio máximo', compute='_calculo_por_nivel')
-	alm_fosiles_max = fields.Integer(string='Almacén de Comb. fósiles máximo', compute='_calculo_por_nivel')
+	alm_hierro_max = fields.Integer(string='Almacén de hierro máximo', compute='_calculo_por_nivel_almacen')
+	alm_cobre_max = fields.Integer(string='Almacén de Cobre máximo', compute='_calculo_por_nivel_almacen')
+	alm_plata_max = fields.Integer(string='Almacén de Plata máximo', compute='_calculo_por_nivel_almacen')
+	alm_oro_max = fields.Integer(string='Almacén de Oro máximo', compute='_calculo_por_nivel_almacen')
+	alm_deuterio_max = fields.Integer(string='Almacén de Deuterio máximo', compute='_calculo_por_nivel_almacen')
+	alm_fosiles_max = fields.Integer(string='Almacén de Comb. fósiles máximo', compute='_calculo_por_nivel_almacen')
 
 	# Generación recursos
-	gen_hierro = fields.Integer(string='Producción de hierro', compute='_calculo_por_nivel')
-	gen_cobre = fields.Integer(string='Producción de Cobre', compute='_calculo_por_nivel')
-	gen_plata = fields.Integer(string='Producción de Plata', compute='_calculo_por_nivel')
-	gen_oro = fields.Integer(string='Producción de Oro', compute='_calculo_por_nivel')
-	gen_deuterio = fields.Integer(string='Producción de Deuterio', compute='_calculo_por_nivel')
-	gen_fosiles = fields.Integer(string='Producción de Comb. fósiles', compute='_calculo_por_nivel')
-	gen_energia = fields.Integer(string='Produccion de W/s', compute='_calculo_por_nivel')
-	energia_funcionamiento = fields.Integer(string='Energia de funcionamiento', compute='_calculo_por_nivel')
+	gen_hierro = fields.Integer(string='Producción de hierro', compute='_calculo_por_nivel_produccion')
+	gen_cobre = fields.Integer(string='Producción de Cobre', compute='_calculo_por_nivel_produccion')
+	gen_plata = fields.Integer(string='Producción de Plata', compute='_calculo_por_nivel_produccion')
+	gen_oro = fields.Integer(string='Producción de Oro', compute='_calculo_por_nivel_produccion')
+	gen_deuterio = fields.Integer(string='Producción de Deuterio', compute='_calculo_por_nivel_produccion')
+	gen_fosiles = fields.Integer(string='Producción de Comb. fósiles', compute='_calculo_por_nivel_produccion')
+	gen_energia = fields.Integer(string='Produccion de W/s', compute='_calculo_por_nivel_produccion')
+	energia_funcionamiento = fields.Integer(string='Energia de funcionamiento', compute='_calculo_por_nivel_produccion')
 
 	# Costes de construcción
-	coste_hierro = fields.Integer(string='Coste de hierro', compute='_calculo_por_nivel')
-	coste_cobre = fields.Integer(string='Coste de Cobre', compute='_calculo_por_nivel')
-	coste_plata = fields.Integer(string='Coste de Plata', compute='_calculo_por_nivel')
-	coste_oro = fields.Integer(string='Coste de Oro', compute='_calculo_por_nivel')
-	tiempo_construccion = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel')
+	coste_hierro = fields.Integer(string='Coste de hierro', compute='_calculo_por_nivel_produccion')
+	coste_cobre = fields.Integer(string='Coste de Cobre', compute='_calculo_por_nivel_produccion')
+	coste_plata = fields.Integer(string='Coste de Plata', compute='_calculo_por_nivel_produccion')
+	coste_oro = fields.Integer(string='Coste de Oro', compute='_calculo_por_nivel_produccion')
+	tiempo_construccion = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion', stored='true')
+	tiempo_construccion_restante = fields.Integer()
+	hierro_vs_hierromax = fields.Char(string='Cantidad', compute='_compute_qty_display')
 
-	@api.depends('nivel_produccion', 'nivel_almacen')
-	def _calculo_por_nivel(self):
+	@api.depends('alm_hierro', 'alm_hierro_max')
+	def _compute_qty_display(self):
+		for record in self:
+			record.hierro_vs_hierromax = f'{record.alm_hierro}/{record.alm_hierro_max}'
+
+
+	@api.depends('nivel_produccion')
+	def _calculo_por_nivel_produccion(self):
 		for e in self:
-			e.alm_hierro_max = e.type.gen_hierro * math.log(e.nivel_almacen) * 24
-			e.alm_cobre_max = e.type.gen_cobre * math.log(e.nivel_almacen) * 24
-			e.alm_plata_max = e.type.gen_plata * math.log(e.nivel_almacen) * 24
-			e.alm_oro_max = e.type.gen_oro * math.log(e.nivel_almacen) * 24
-			e.alm_deuterio_max = e.type.gen_deuterio * math.log(e.nivel_almacen) * 24
-			e.alm_fosiles_max = e.type.gen_fosiles * math.log(e.nivel_almacen) * 24
 
-			e.gen_hierro = e.type.gen_hierro * math.log(e.nivel_produccion)
-			e.gen_cobre = e.type.gen_cobre * math.log(e.nivel_produccion)
-			e.gen_plata = e.type.gen_plata * math.log(e.nivel_produccion)
-			e.gen_oro = e.type.gen_oro * math.log(e.nivel_produccion)
-			e.gen_deuterio = e.type.gen_deuterio * math.log(e.nivel_produccion)
-			e.gen_fosiles = e.type.gen_fosiles * math.log(e.nivel_produccion)
-			e.gen_energia = e.type.gen_energia * math.log(e.nivel_produccion)
-			e.coste_hierro = e.type.coste_hierro * math.log(e.nivel_produccion)
-			e.coste_cobre = e.type.coste_cobre * math.log(e.nivel_produccion)
-			e.coste_plata = e.type.coste_plata * math.log(e.nivel_produccion)
-			e.coste_oro = e.type.coste_oro * math.log(e.nivel_produccion)
-			e.tiempo_construccion = e.type.tiempo_construccion * math.log(e.nivel_produccion)
-			e.energia_funcionamiento = e.type.energia_funcionamiento * math.log(e.nivel_produccion)
+			e.gen_hierro = e.type.gen_hierro + e.type.gen_hierro * math.log(e.nivel_produccion)
+			e.gen_cobre = e.type.gen_cobre + e.type.gen_cobre * math.log(e.nivel_produccion)
+			e.gen_plata = e.type.gen_plata + e.type.gen_plata * math.log(e.nivel_produccion)
+			e.gen_oro = e.type.gen_oro + e.type.gen_oro * math.log(e.nivel_produccion)
+			e.gen_deuterio = e.type.gen_deuterio + e.type.gen_deuterio * math.log(e.nivel_produccion)
+			e.gen_fosiles = e.type.gen_deuterio + e.type.gen_fosiles * math.log(e.nivel_produccion)
+			e.gen_energia = e.type.gen_energia + e.type.gen_energia * math.log(e.nivel_produccion)
+
+
+
+			e.coste_hierro = e.type.coste_hierro + e.type.coste_hierro * math.log(e.nivel_produccion)
+			e.coste_cobre = e.type.coste_cobre + e.type.coste_cobre * math.log(e.nivel_produccion)
+			e.coste_plata = e.type.coste_plata + e.type.coste_plata * math.log(e.nivel_produccion)
+			e.coste_oro = e.type.coste_plata + e.type.coste_oro * math.log(e.nivel_produccion)
+
+			e.tiempo_construccion = e.type.tiempo_construccion + e.type.tiempo_construccion * math.log(e.nivel_produccion)
+			e.energia_funcionamiento = e.type.energia_funcionamiento + e.type.energia_funcionamiento * math.log(e.nivel_produccion)
+			e.tiempo_construccion_restante = e.tiempo_construccion
+
+	@api.depends( 'nivel_almacen')
+	def _calculo_por_nivel_almacen(self):
+		for e in self:
+			e.alm_hierro_max = ( e.type.gen_hierro + e.type.gen_hierro * math.log(e.nivel_almacen) ) * 1440
+			e.alm_cobre_max = ( e.type.gen_cobre + e.type.gen_cobre * math.log(e.nivel_almacen) ) * 1440
+			e.alm_plata_max = ( e.type.gen_plata + e.type.gen_plata * math.log(e.nivel_almacen) ) * 1440
+			e.alm_oro_max = ( e.type.gen_oro + e.type.gen_oro * math.log(e.nivel_almacen) ) * 1440
+			e.alm_deuterio_max = ( e.type.gen_deuterio + e.type.gen_deuterio * math.log(e.nivel_almacen) ) * 1440
+			e.alm_fosiles_max = ( e.type.gen_deuterio + e.type.gen_fosiles * math.log(e.nivel_almacen) ) * 1440
 
 	def recolectar_recursos(self):
 
@@ -283,6 +304,38 @@ class constructed_building(models.Model):
 			edificio.alm_oro = 0
 			edificio.alm_deuterio = 0
 			edificio.alm_fosiles = 0
+	@api.model
+	def cron_update_resources(self):
+		for b in self.search([]):
+			#Updates
+			if b.estado == '1':
+
+					b.tiempo_construccion_restante -= 1
+					print("resta minutos", b.tiempo_construccion_restante)
+					b.tiempo_construccion_restante = b.tiempo_construccion
+
+					if b.tiempo_construccion_restante <= 0:
+						b.nivel_produccion += 1
+						b.estado = '2'
+						print("Edificio ${b.id} activo", b.estado)
+
+
+			#Generación recursos
+			elif b.estado == '2':
+				if b.alm_hierro < b.alm_hierro_max:
+					b.alm_hierro += b.gen_hierro
+				if b.alm_cobre < b.alm_cobre_max:
+					b.alm_cobre += b.gen_cobre
+				if b.alm_plata < b.alm_plata_max:
+					b.alm_plata += b.gen_plata
+				if b.alm_oro < b.alm_oro_max:
+					b.alm_oro += b.gen_oro
+				if b.alm_deuterio < b.alm_deuterio_max:
+					b.alm_deuterio += b.gen_deuterio
+				print('Suma recursos')
+
+
+
 
 
 class starship_type(models.Model):
@@ -317,8 +370,8 @@ class constructed_starship(models.Model):
 	player = fields.Many2one('odoogame.player', 'Jugador')
 	ubicacion = fields.Many2one('odoogame.planet', 'Planeta')
 
-	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido')])
-	vida_actual = fields.Float(string='Coste de Oro')
+	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido')], default='1', string='Estado')
+	vida_actual = fields.Float(string='Vida actual')
 	nivel_almacen = fields.Integer(default=1)
 
 	atacando_en_batalla = fields.Many2one('odoogame.battle', string='En ataque')
@@ -352,4 +405,8 @@ class battle(models.Model):
     def _comprobar_combatientes(self):
         for b in self:
             if b.atacante == b.defensor:
+"""""
+"""""
+ps aux | grep /usr/bin/odoo
+
 """""

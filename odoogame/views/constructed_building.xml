@@ -33,7 +33,7 @@
 					<field name="alm_deuterio"/>
 					<field name="alm_fosiles"/>
 
-					<button name="recolectar_recursos" type="object" string="Recolectar recursos" class="oe_highlight" icon="fa-level-up"/>
+					<button name="recolectar_recursos" type="object" string="Recursos" class="oe_highlight" icon="fa-level-up"/>
 
 				</tree>
 			</field>
@@ -71,6 +71,7 @@
 							<group>
 								<field name="vida_actual"/>
 								<field name="energia_funcionamiento"/>
+								<field name="tiempo_construccion_restante"/>
 
 							</group>
 
@@ -80,9 +81,9 @@
 
 						<group string="Recursos almacenados">
 							<group>
-								<field name="alm_hierro"/>
-								<field name="alm_cobre"/>
-								<field name="alm_plata"/>
+								<field name="hierro_vs_hierromax"/>
+								<field name="alm_cobre" widget="char"/>
+								<field name="alm_plata" widget="char"/>
 
 							</group>
 

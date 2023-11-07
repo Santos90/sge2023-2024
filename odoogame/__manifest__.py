@@ -20,12 +20,12 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base','mail'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-
+        'controllers/cron.xml',
         'views/building_type.xml',
         'views/starship_type.xml',
         'views/planet.xml',
