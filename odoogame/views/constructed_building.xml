@@ -102,17 +102,17 @@
 
 							<group string="Metales: ">
 
-								<field name="gen_hierro"/>
-								<field name="gen_cobre"/>
-								<field name="gen_plata"/>
-								<field name="gen_oro"/>
+								<field name="gen_hierro" attrs="{'invisible': [('gen_hierro', '==', 0)]}"/>
+								<field name="gen_cobre" attrs="{'invisible': [('gen_cobre', '==', 0)]}"/>
+								<field name="gen_plata" attrs="{'invisible': [('gen_plata', '==', 0)]}"/>
+								<field name="gen_oro" attrs="{'invisible': [('gen_oro', '==', 0)]}"/>
 
 
 							</group>
-							<group string="Energéticos:">
-								<field name="gen_deuterio"/>
-								<field name="gen_fosiles"/>
-								<field name="gen_energia"/>
+							<group string="Energéticos:" attrs="{'invisible': [('gen_deuterio', '==', 0), ('gen_fosiles', '==', 0), ('gen_energia', '==', 0)]}">
+								<field name="gen_deuterio" attrs="{'invisible': [('gen_deuterio', '==', 0)]}"/>
+								<field name="gen_fosiles" attrs="{'invisible': [('gen_fosiles', '==', 0)]}"/>
+								<field name="gen_energia" attrs="{'invisible': [('gen_energia', '==', 0)]}"/>
 
 							</group>
 
@@ -121,21 +121,19 @@
 						<group string="Coste recursos">
 
 							<group>
-								<field name="coste_hierro"/>
-								<field name="coste_cobre"/>
+								<field name="coste_hierro" attrs="{'invisible': [('coste_hierro', '==', 0)]}"/>
+								<field name="coste_cobre" attrs="{'invisible': [('coste_cobre', '==', 0)]}"/>
 
 
 							</group>
 							<group>
 
-								<field name="coste_plata"/>
-								<field name="coste_oro"/>
+								<field name="coste_plata" attrs="{'invisible': [('coste_plata', '==', 0)]}"/>
+								<field name="coste_oro" attrs="{'invisible': [('coste_oro', '==', 0)]}"/>
 
 							</group>
 
 						</group>
-
-
 
 					</sheet>
 				</form>

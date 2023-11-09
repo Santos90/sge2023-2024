@@ -4,9 +4,8 @@
 import random
 from odoo import models, fields, api
 import math
-import logging
 
-_logger = logging.getLogger(__name__)
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 
 
@@ -177,7 +176,7 @@ class building_type(models.Model):
 	gen_energia = fields.Integer(strings='Produccion de W/s')
 
 	vida_inicial = fields.Float(string='Vida inicial edificio',
-	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
+					    help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
 	tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Electricidad'), ('3', 'Deuterio')])
 	energia_funcionamiento = fields.Integer(string='Energia de funcionamiento')
 
@@ -197,10 +196,10 @@ class constructed_building(models.Model):
 	type = fields.Many2one('odoogame.building_type', string="Tipo de edificio")
 
 	vida_inicial = fields.Float(string='Vida inicial edificio',
-	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar',
-	                            related='type.vida_inicial')
+					    help='Va perdiendo vida por desgaste o por ataques. Se puede reparar',
+					    related='type.vida_inicial')
 	tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Electricidad'), ('3', 'Deuterio')],
-	                                related='type.tipo_energia')
+						  related='type.tipo_energia')
 
 	# Rel 4
 	planeta = fields.Many2one('odoogame.planet', 'Planeta')
@@ -230,13 +229,13 @@ class constructed_building(models.Model):
 	alm_fosiles_max = fields.Integer(string='Almacén de Comb. fósiles máximo', compute='_calculo_por_nivel_almacen')
 
 	# Generación recursos
-	gen_hierro = fields.Integer(string='Producción de hierro', compute='_calculo_por_nivel_produccion')
-	gen_cobre = fields.Integer(string='Producción de Cobre', compute='_calculo_por_nivel_produccion')
-	gen_plata = fields.Integer(string='Producción de Plata', compute='_calculo_por_nivel_produccion')
-	gen_oro = fields.Integer(string='Producción de Oro', compute='_calculo_por_nivel_produccion')
-	gen_deuterio = fields.Integer(string='Producción de Deuterio', compute='_calculo_por_nivel_produccion')
-	gen_fosiles = fields.Integer(string='Producción de Comb. fósiles', compute='_calculo_por_nivel_produccion')
-	gen_energia = fields.Integer(string='Produccion de W/s', compute='_calculo_por_nivel_produccion')
+	gen_hierro = fields.Integer(string='Gen hierro', compute='_calculo_por_nivel_produccion')
+	gen_cobre = fields.Integer(string='Gen Cobre', compute='_calculo_por_nivel_produccion')
+	gen_plata = fields.Integer(string='Gen Plata', compute='_calculo_por_nivel_produccion')
+	gen_oro = fields.Integer(string='Gen Oro', compute='_calculo_por_nivel_produccion')
+	gen_deuterio = fields.Integer(string='Gen Deuterio', compute='_calculo_por_nivel_produccion')
+	gen_fosiles = fields.Integer(string='Gen Comb. fósiles', compute='_calculo_por_nivel_produccion')
+	gen_energia = fields.Integer(string='Gen W/s', compute='_calculo_por_nivel_produccion')
 	energia_funcionamiento = fields.Integer(string='Energia de funcionamiento', compute='_calculo_por_nivel_produccion')
 
 	# Costes de construcción
@@ -245,7 +244,7 @@ class constructed_building(models.Model):
 	coste_plata = fields.Integer(string='Coste de Plata', compute='_calculo_por_nivel_produccion')
 	coste_oro = fields.Integer(string='Coste de Oro', compute='_calculo_por_nivel_produccion')
 	tiempo_construccion = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion',
-	                                     stored='true')
+							 stored='true')
 	tiempo_construccion_restante = fields.Integer(default= 0)
 	hierro_vs_hierromax = fields.Char(string='Cantidad', compute='_compute_qty_display')
 
@@ -337,7 +336,7 @@ class starship_type(models.Model):
 	icon = fields.Image(max_width=300, max_height=300, string='')
 
 	vida_inicial = fields.Float(string='Vida inicial de la nave',
-	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
+					    help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
 	tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Deuterio')])
 	energia_funcionamiento = fields.Float(string='Energia')
 
@@ -363,7 +362,7 @@ class constructed_starship(models.Model):
 	ubicacion = fields.Many2one('odoogame.planet', 'Planeta')
 
 	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido')],
-	                          default='1', string='Estado')
+					  default='1', string='Estado')
 	vida_actual = fields.Float(string='Vida actual')
 	nivel_almacen = fields.Integer(default=1)
 
@@ -393,12 +392,13 @@ class battle(models.Model):
 	flotas_atacantes = fields.One2many('odoogame.flota', 'id', string='Flotas atacantes')
 
 
-"""""
-    @api.constraint('atacante', 'defensor')
-    def _comprobar_combatientes(self):
-        for b in self:
-            if b.atacante == b.defensor:
-"""""
+
+	@api.constrains('atacante', 'defensor')
+	def _comprobar_combatientes(self):
+		for b in self:
+			if b.atacante == b.defensor:
+				raise ValidationError("No puedes atacarte a ti mismo")
+
 """""
 ps aux | grep /usr/bin/odoo
 ps aux | grep odoo/usr/bin/odoo

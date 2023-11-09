@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="0"> <!-- Si el usuari borra les dades de demo, les inserta de nou-->
 
         <record id="odoogame_nave_nave_batalla" model="odoogame.starship_type">
             <field name="name">Nave de batalla</field>

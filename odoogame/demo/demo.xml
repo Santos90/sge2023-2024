@@ -1,7 +1,7 @@
 <odoo>
-    <data>
+    <data noupdate="0"> <!-- Si el usuari borra les dades de demo, les inserta de nou-->
 
-        <record id="odoogame_galaxia_playerOne" model="odoogame.player">
+        <record id="odoogame_player_xxjcaxx"  model="odoogame.player">
             <field name="name">xxjcaxx</field>
             <field name="icon">iVBORw0KGgoAAAANSUhEUgAAAcwAAAHMCAIAAADXuQ/RAAAPa0lEQVR4nOzdb6ie913H8ZwtZ121
 zR/ao+ufnSRt1mLLSl1R2yaNjYExmMYOZgeKMEboGMEHFuYDQZI8Uib4RESUKIWh0FowyzYZ0y0u
@@ -74,71 +74,38 @@ rebiqLGqjpce1h+sZVqrZ/XzXvXDXq0MPhnmTRYgSGQBgkQWIEhkAYJEFiBIZAGCRBYgaBluq03c
 n2p4tpXxvMK2leJ9t/XDs8VrZUP8xzlZWt2t29R9zNabLECQyAIEiSxAkMgCBIksQJDIAgS1OOpw
 1OSKiRY6HnfpBllyWt2t2zTqAMb60S5vsgBBIgsQJLIAQSILECSyAEEiCxD0PwEAAP//Q+JfzsqL
 Kr8AAAAASUVORK5CYII=</field>
+
         </record>
 
-        <record id="odoogame_galaxia_via_lactea" model="odoogame.galaxy">
+        <record id="odoogame_galaxia_via_lactea"  model="odoogame.galaxy">
             <field name="name">Vía Láctea</field>
         </record>
 
-        <record id="odoogame_star_sol" model="odoogame.star">
+        <record id="odoogame_star_sol"  model="odoogame.star">
             <field name="name">Sol</field>
             <field name="galaxy" ref="odoogame_galaxia_via_lactea"/>
         </record>
 
-        <record id="odoogame_planeta_mercurio" model="odoogame.planet">
+        <record id="odoogame_planeta_mercurio"  model="odoogame.planet">
             <field name="name">Mercurio</field>
             <field name="star" ref="odoogame_star_sol"/>
         </record>
 
-        <record id="odoogame_planeta_venus" model="odoogame.planet">
+        <record id="odoogame_planeta_venus"  model="odoogame.planet">
             <field name="name">Venus</field>
             <field name="star" ref="odoogame_star_sol"/>
         </record>
 
-        <record id="odoogame_planeta_tierra" model="odoogame.planet">
+        <record id="odoogame_planeta_tierra"  model="odoogame.planet">
             <field name="name">Tierra</field>
             <field name="star" ref="odoogame_star_sol"/>
         </record>
 
-        <record id="odoogame_planeta_marte" model="odoogame.planet">
+        <record id="odoogame_planeta_marte"  model="odoogame.planet">
             <field name="name">Marte</field>
             <field name="star" ref="odoogame_star_sol"/>
         </record>
 
-
-        <record id="odoogame_edificio_mina_hierro" model="odoogame.building_type">
-            <field name="name">Mina de hierro</field>
-            <field name="gen_hierro"> 30 </field>
-            <field name="vida_inicial">300</field>
-            <field name="coste_hierro">250</field>
-            <field name="tiempo_construccion">2</field>
-        </record>
-
-        <record id="odoogame_edificio_mina_cobre" model="odoogame.building_type">
-            <field name="name">Mina de cobre</field>
-            <field name="gen_cobre"> 60 </field>
-            <field name="vida_inicial">300</field>
-            <field name="coste_hierro">250</field>
-            <field name="tiempo_construccion">4</field>
-        </record>
-
-        <record id="odoogame_edificio_mina_plata" model="odoogame.building_type">
-            <field name="name">Mina de plata</field>
-            <field name="gen_plata"> 60 </field>
-            <field name="vida_inicial">300</field>
-            <field name="coste_cobre">250</field>
-            <field name="coste_hierro">150</field>
-            <field name="tiempo_construccion">5</field>
-        </record>
-
-        <record id="odoogame_edificio_mina_fosiles" model="odoogame.building_type">
-            <field name="name">Mina de plata</field>
-            <field name="gen_plata"> 60 </field>
-            <field name="vida_inicial">300</field>
-            <field name="coste_cobre">250</field>
-            <field name="coste_hierro">150</field>
-            <field name="tiempo_construccion">5</field>
-        </record>
 
     </data>
 </odoo>

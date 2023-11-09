@@ -36,11 +36,12 @@
         'views/views.xml',
         'views/templates.xml',
 
-        'demo/building_type.xml',
-        'demo/starship_type.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
+        'demo/demo_building_type.xml',
+        'demo/demo_starship_type.xml',
     ],
 }

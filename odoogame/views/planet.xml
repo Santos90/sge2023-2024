@@ -61,10 +61,31 @@
 
                         <notebook>
                             <page string="Edificios">
-                                <field name="edificios"/>
+
+                                <field name="edificios">
+                                    <tree>
+                                        <field name="type"/>
+                                        <field name="estado"/>
+                                        <field name="vida_actual"/>
+                                        <field name="nivel_produccion"/>
+                                        <field name="gen_hierro"/>
+                                        <field name="gen_cobre"/>
+                                        <field name="gen_plata"/>
+                                        <field name="gen_oro"/>
+
+
+                                        <field name="gen_deuterio"/>
+                                        <field name="gen_fosiles"/>
+                                        <field name="gen_energia"/>
+                                    </tree>
+
+                                </field>
+
+
                                 <button name="crear_edificio" type="object" string="Create" class="oe_highlight" icon="fa-level-up"/>
                                 <button name="recolectar_recursos" type="object" string="Recolectar recursos" class="oe_highlight" icon="fa-level-up"/>
                             </page>
+
                             <page string="Naves">
                                 <field name="naves"/>
                             </page>
@@ -77,6 +98,7 @@
 
             </field>
         </record>
+
         <record model="ir.ui.view" id="odoogame.planets_search">
             <field name="name">Planets list</field>
             <field name="model">odoogame.planet</field>
