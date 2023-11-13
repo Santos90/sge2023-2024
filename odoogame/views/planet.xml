@@ -15,6 +15,8 @@
                     <field name="oro"/>
                     <field name="fosiles"/>
                     <field name="deuterio"/>
+                    <button name="recolectar_recursos" type="object" string="Recolectar" class="oe_highlight" icon="fa-level-down"/>
+
                 </tree>
             </field>
         </record>
@@ -68,15 +70,17 @@
                                         <field name="estado"/>
                                         <field name="vida_actual"/>
                                         <field name="nivel_produccion"/>
-                                        <field name="gen_hierro"/>
-                                        <field name="gen_cobre"/>
-                                        <field name="gen_plata"/>
-                                        <field name="gen_oro"/>
+                                        <field name="alm_hierro"/>
+                                        <field name="alm_cobre"/>
+                                        <field name="alm_plata"/>
+                                        <field name="alm_oro"/>
 
 
-                                        <field name="gen_deuterio"/>
-                                        <field name="gen_fosiles"/>
+                                        <field name="alm_deuterio"/>
+                                        <field name="alm_fosiles"/>
                                         <field name="gen_energia"/>
+                                        <button name="recolectar_recursos" type="object" string="Recolectar" class="oe_highlight" icon="fa-level-down"/>
+
                                     </tree>
 
                                 </field>
@@ -96,6 +100,45 @@
                 </form>
 
 
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.planet_kanban">
+            <field name="name">Palanetas</field>
+            <field name="model">odoogame.planet</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="jugador">
+                    <!--list of field to be loaded -->
+                    <field name="name" />
+                    <field name="id" /> <!-- És important afegir el id per al record.id.value -->
+                    <field name="icon" />
+
+                    <templates>
+
+                        <t t-name="kanban-box">
+                            <div class="oe_product_vignette">
+                                <a type="open">
+                                    <img class="oe_kanban_image"
+                                         t-att-alt="record.name.value"
+                                         t-att-src="kanban_image('odoogame.planet', 'icon', record.id.value)" />
+                                </a>
+                                <div class="oe_product_desc">
+                                    <h4>
+                                        <a type="edit">
+                                            <field name="name"></field>
+                                        </a>
+                                    </h4>
+                                    <ul>
+
+                                        <li>Star: <field name="star"></field></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </t>
+
+                    </templates>
+                </kanban>
             </field>
         </record>
 

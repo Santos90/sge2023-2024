@@ -7,7 +7,7 @@
     <record model="ir.actions.act_window" id="odoogame.action_player">
       <field name="name">Gestión jugadores</field>
       <field name="res_model">odoogame.player</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">tree,form,kanban</field>
     </record>
 
     <record model="ir.actions.act_window" id="odoogame.action_server">
@@ -31,7 +31,7 @@
     <record model="ir.actions.act_window" id="odoogame.action_planet">
       <field name="name">Gestión planetas</field>
       <field name="res_model">odoogame.planet</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">tree,form,kanban</field>
     </record>
 
     <record model="ir.actions.act_window" id="odoogame.action_building_type">

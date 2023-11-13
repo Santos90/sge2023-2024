@@ -29,7 +29,7 @@
 
                             <group>
                                 <field name="name"/>
-                            <field name="description"/>
+                                <field name="description"/>
                             </group>
                             <group>
                                 <field name="icon" widget="image" class="oe_avatar"/>
@@ -70,6 +70,46 @@
                 </form>
 
 
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoogame.player_kanban">
+            <field name="name">Jugadores</field>
+            <field name="model">odoogame.player</field>
+            <field name="arch" type="xml">
+                <kanban >
+                    <!--list of field to be loaded -->
+                    <field name="name" />
+                    <field name="id" /> <!-- És important afegir el id per al record.id.value -->
+                    <field name="icon" />
+                    <field name="description" />
+
+                    <templates>
+
+                        <t t-name="kanban-box">
+                            <div class="oe_product_vignette">
+                                <a type="open">
+                                    <img class="oe_kanban_image"
+                                         t-att-alt="record.name.value"
+                                         t-att-src="kanban_image('odoogame.player', 'icon', record.id.value)" />
+                                </a>
+                                <div class="oe_product_desc">
+                                    <h4>
+                                        <a type="edit">
+                                            <field name="name"></field>
+                                        </a>
+                                    </h4>
+                                    <ul>
+
+                                        <li>Descripción: <field name="description"></field></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </t>
+
+                    </templates>
+                </kanban>
             </field>
         </record>
 

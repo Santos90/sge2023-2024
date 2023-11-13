@@ -96,6 +96,8 @@ class planet(models.Model):
 	_description = 'Planeta que orbita una estrella.'
 
 	name = fields.Char(required=True)
+	icon = fields.Image(max_width=300, max_height=300, string='')
+
 	level = fields.Integer(default=1)
 	# Rel 2. Una estrella tiene muchos planetas
 	star = fields.Many2one('odoogame.star', string='Estrella', delegate=False, ondelete='restrict')
@@ -145,7 +147,9 @@ class planet(models.Model):
 	# Recolecta los recursos que almacenan todos los edificios del planeta
 	def recolectar_recursos(self):
 		for planeta in self:
+
 			for edificio in planeta.edificios:
+				print("Recolectando recursos")
 				planeta.hierro += edificio.alm_hierro
 				planeta.cobre += edificio.alm_cobre
 				planeta.plata += edificio.alm_plata
@@ -285,12 +289,19 @@ class constructed_building(models.Model):
 	def recolectar_recursos(self):
 
 		for edificio in self:
+			print("Recolectando recursos")
 			edificio.planeta.hierro += edificio.alm_hierro
 			edificio.planeta.cobre += edificio.alm_cobre
 			edificio.planeta.plata += edificio.alm_plata
 			edificio.planeta.oro += edificio.alm_oro
 			edificio.planeta.deuterio += edificio.alm_deuterio
 			edificio.planeta.fosiles += edificio.alm_fosiles
+
+			print("Recolectando: ", edificio.alm_hierro, " hierro")
+			print("Recolectando: ", edificio.alm_cobre, " hierro")
+			print("Recolectando: ", edificio.alm_plata, " hierro")
+			print("Recolectando: ", edificio.alm_oro, " hierro")
+			print("Recolectando: ", edificio.alm_deuterio, " hierro")
 
 			edificio.alm_hierro = 0
 			edificio.alm_cobre = 0
@@ -311,7 +322,7 @@ class constructed_building(models.Model):
 				if b.tiempo_construccion_restante == b.tiempo_construccion:
 					b.nivel_produccion += 1
 					b.estado = '2'
-					print("Edificio ${b.id} activo", b.estado)
+					print("Edificio activo", b.estado)
 
 
 			# Generación recursos
