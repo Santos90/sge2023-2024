@@ -43,5 +43,6 @@
         'demo/demo.xml',
         'demo/demo_building_type.xml',
         'demo/demo_starship_type.xml',
+        'demo/planets_img_demo.xml'
     ],
 }

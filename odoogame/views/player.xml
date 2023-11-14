@@ -44,7 +44,9 @@
 
                             </page>
 
+<button name="generate_planet" type="object" string="Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
                         </notebook>
+                        <button name="generate_planet" type="object" string="Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
                         <group string="Recursos Totales">
 
 

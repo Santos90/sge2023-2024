@@ -42,6 +42,20 @@ class player(models.Model):
 
 	# i sempre es recalcula quan executem un action que el mostra
 
+
+	def generate_planet(self):
+		for p in self:
+			planet_img = self.env['odoogame.planet_img'].search([]).ids
+			random.shuffle(planet_img)
+			stars = self.env['odoogame.star'].search([]).ids
+			random.shuffle(stars)
+			planetas = p.planetas.create({
+				"name": "Planet" + str(p.id),
+				"icon": self.env['odoogame.planet_img'].browse(planet_img[0]).image_small,
+				"jugador": p.id,
+				"star": stars[0]
+			})
+
 	@api.depends('planetas')  # El decorador @api.depends() indica que es cridarà a la funció
 	# sempre que es modifiquen els camps seats i attendee_ids.
 	# Si no el posem, es recalcula sols al recarregar el action.
@@ -98,7 +112,7 @@ class planet(models.Model):
 	name = fields.Char(required=True)
 	icon = fields.Image(max_width=300, max_height=300, string='')
 
-	level = fields.Integer(default=1)
+
 	# Rel 2. Una estrella tiene muchos planetas
 	star = fields.Many2one('odoogame.star', string='Estrella', delegate=False, ondelete='restrict')
 	# Rel 3. Un jugador ocupa palnetas
@@ -119,13 +133,6 @@ class planet(models.Model):
 
 	ataques = fields.One2many('odoogame.battle', 'atacante', string='Batallas iniciadas')
 	defensas = fields.One2many('odoogame.battle', 'atacante', string='Ataques recibidos')
-
-	def update_level(self):
-		for p in self:
-			if p.hierro >= 100 and p.cobre >= 50:
-				p.hierro -= 100
-				p.cobre -= 50
-				p.level += 1
 
 	def crear_edificio(self):
 		for p in self:
@@ -149,7 +156,6 @@ class planet(models.Model):
 		for planeta in self:
 
 			for edificio in planeta.edificios:
-				print("Recolectando recursos")
 				planeta.hierro += edificio.alm_hierro
 				planeta.cobre += edificio.alm_cobre
 				planeta.plata += edificio.alm_plata
@@ -317,12 +323,12 @@ class constructed_building(models.Model):
 			if b.estado == '1':
 
 				b.tiempo_construccion_restante += 1
-				print("resta minutos", b.tiempo_construccion_restante)
+
 
 				if b.tiempo_construccion_restante == b.tiempo_construccion:
 					b.nivel_produccion += 1
 					b.estado = '2'
-					print("Edificio activo", b.estado)
+
 
 
 			# Generación recursos
@@ -335,9 +341,13 @@ class constructed_building(models.Model):
 					b.alm_plata += b.gen_plata
 				if b.alm_oro < b.alm_oro_max:
 					b.alm_oro += b.gen_oro
+				if b.alm_fosiles < b.alm_fosiles_max:
+					b.alm_fosiles += b.gen_fosiles
 				if b.alm_deuterio < b.alm_deuterio_max:
 					b.alm_deuterio += b.gen_deuterio
-				print('Suma recursos')
+					if b.alm_deuterio >= b.alm_deuterio_max:
+						b.alm_deuterio = b.alm_deuterio_max
+
 
 
 class starship_type(models.Model):
@@ -410,6 +420,16 @@ class battle(models.Model):
 			if b.atacante == b.defensor:
 				raise ValidationError("No puedes atacarte a ti mismo")
 
+
+class planet_img(models.Model):
+    _name = 'odoogame.planet_img'
+    _description = 'Template Images'
+
+    name = fields.Char()
+    type = fields.Char()
+    image = fields.Image(max_width=400, max_height=400)
+    image_small = fields.Image(related="image", string="ismall", max_width=200, max_height=200)
+    image_thumb = fields.Image(related="image", string="ithumb", max_width=100, max_height=100)
 """""
 ps aux | grep /usr/bin/odoo
 ps aux | grep odoo/usr/bin/odoo

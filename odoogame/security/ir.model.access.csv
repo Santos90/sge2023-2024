@@ -9,3 +9,4 @@ access_odoogame_constructed_building,odoogame.constructed_building,model_odoogam
 access_odoogame_starship_type,odoogame.starship_type,model_odoogame_starship_type,base.group_user,1,1,1,1
 access_odoogame_constructed_starship,odoogame.constructed_starship,model_odoogame_constructed_starship,base.group_user,1,1,1,1
 access_odoogame_battle,odoogame.battle,model_odoogame_battle,base.group_user,1,1,1,1
+access_odoogame_planet_img,odoogame.planet_img,model_odoogame_planet_img,base.group_user,1,1,1,1
