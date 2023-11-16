@@ -208,18 +208,17 @@ class constructed_building(models.Model):
 	vida_inicial = fields.Float(string='Vida inicial edificio',
 					    help='Va perdiendo vida por desgaste o por ataques. Se puede reparar',
 					    related='type.vida_inicial')
-	tipo_energia = fields.Selection([('1', 'Comb. Fósiles'), ('2', 'Electricidad'), ('3', 'Deuterio')],
-						  related='type.tipo_energia')
+	tipo_energia = fields.Selection(related='type.tipo_energia')
 
 	# Rel 4
 	planeta = fields.Many2one('odoogame.planet', 'Planeta')
 
 	estado = fields.Selection(
-		[('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'), ('4', 'En reparación'), ('5', 'Destruido')])
+		[('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'), ('4', 'En reparación'), ('5', 'Destruido'), ('6', 'Nivel de producción'), ('7', 'Nivel de almacén')])
 	vida_actual = fields.Float(string='Vida actual')
 
-	nivel_produccion = fields.Integer(default=1)
-	nivel_almacen = fields.Integer(default=1)
+	nivel_produccion = fields.Integer(default=0)
+	nivel_almacen = fields.Integer(default=0)
 
 	alm_hierro = fields.Integer(string='Almacén de hierro')
 	alm_cobre = fields.Integer(string='Almacén de Cobre')
@@ -246,6 +245,7 @@ class constructed_building(models.Model):
 	gen_deuterio = fields.Integer(string='Gen Deuterio', compute='_calculo_por_nivel_produccion')
 	gen_fosiles = fields.Integer(string='Gen Comb. fósiles', compute='_calculo_por_nivel_produccion')
 	gen_energia = fields.Integer(string='Gen W/s', compute='_calculo_por_nivel_produccion')
+
 	energia_funcionamiento = fields.Integer(string='Energia de funcionamiento', compute='_calculo_por_nivel_produccion')
 
 	# Costes de construcción
@@ -253,19 +253,45 @@ class constructed_building(models.Model):
 	coste_cobre = fields.Integer(string='Coste de Cobre', compute='_calculo_por_nivel_produccion')
 	coste_plata = fields.Integer(string='Coste de Plata', compute='_calculo_por_nivel_produccion')
 	coste_oro = fields.Integer(string='Coste de Oro', compute='_calculo_por_nivel_produccion')
-	tiempo_construccion = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion',
+
+	tiempo_construccion = fields.Integer(related='type.tiempo_construccion')
+	time_update_gen = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion',
 							 stored='true')
-	tiempo_construccion_restante = fields.Integer(default= 0)
-	hierro_vs_hierromax = fields.Char(string='Cantidad', compute='_compute_qty_display')
+	time_update_alm = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion',
+							 stored='true')
+
+	tiempo_restante = fields.Integer(default= 0)#variable que segun el caso, nos servirá para contar el tiempo restante
+
+	hierro_vs_max = fields.Char(string='Hierro', compute='_compute_qty_display')
+	cobre_vs_max = fields.Char(string='Cobre', compute='_compute_qty_display')
+	plata_vs_max = fields.Char(string='Palta', compute='_compute_qty_display')
+	oro_vs_max = fields.Char(string='Oro', compute='_compute_qty_display')
+	deuterio_vs_max = fields.Char(string='Deuterio', compute='_compute_qty_display')
+	fosiles_vs_max = fields.Char(string='Fósiles',compute='_compute_qty_display')
+	tiempo_vs_max = fields.Char(string='Tiempo restante',compute='_compute_qty_display')
 
 	@api.depends('alm_hierro', 'alm_hierro_max')
 	def _compute_qty_display(self):
 		for record in self:
-			record.hierro_vs_hierromax = f'{record.alm_hierro}/{record.alm_hierro_max}'
+			record.hierro_vs_max = f'{record.alm_hierro}/{record.alm_hierro_max}'
+			record.cobre_vs_max = f'{record.alm_cobre}/{record.alm_cobre_max}'
+			record.plata_vs_max = f'{record.alm_plata}/{record.alm_plata_max}'
+			record.oro_vs_max = f'{record.alm_oro}/{record.alm_oro_max}'
+			record.deuterio_vs_max = f'{record.alm_deuterio}/{record.alm_deuterio_max}'
+			record.fosiles_vs_max = f'{record.alm_fosiles}/{record.alm_fosiles_max}'
+
+			if record.estado == '1':
+				record.tiempo_vs_max = f'{record.tiempo_restante}/{record.tiempo_construccion} minutos'
+			if record.estado == '6':
+				record.tiempo_vs_max = f'{record.tiempo_restante}/{record.time_update_gen} minutos'
+			if record.estado == '7':
+				record.tiempo_vs_max = f'{record.tiempo_restante}/{record.time_update_alm} minutos'
+
 
 	@api.depends('nivel_produccion')
 	def _calculo_por_nivel_produccion(self):
 		for e in self:
+
 			e.gen_hierro = e.type.gen_hierro + e.type.gen_hierro * math.log(e.nivel_produccion)
 			e.gen_cobre = e.type.gen_cobre + e.type.gen_cobre * math.log(e.nivel_produccion)
 			e.gen_plata = e.type.gen_plata + e.type.gen_plata * math.log(e.nivel_produccion)
@@ -279,7 +305,7 @@ class constructed_building(models.Model):
 			e.coste_plata = e.type.coste_plata + e.type.coste_plata * math.log(e.nivel_produccion)
 			e.coste_oro = e.type.coste_plata + e.type.coste_oro * math.log(e.nivel_produccion)
 
-			e.tiempo_construccion = e.type.tiempo_construccion + e.type.tiempo_construccion * math.log(e.nivel_produccion)
+			e.time_update_gen = e.type.tiempo_construccion + e.type.tiempo_construccion * math.log(e.nivel_produccion)
 			e.energia_funcionamiento = e.type.energia_funcionamiento + e.type.energia_funcionamiento * math.log(e.nivel_produccion)
 
 	@api.depends('nivel_almacen')
@@ -292,6 +318,16 @@ class constructed_building(models.Model):
 			e.alm_deuterio_max = (e.type.gen_deuterio + e.type.gen_deuterio * math.log(e.nivel_almacen)) * 1440
 			e.alm_fosiles_max = (e.type.gen_deuterio + e.type.gen_fosiles * math.log(e.nivel_almacen)) * 1440
 
+			e.time_update_alm = e.type.tiempo_construccion + e.type.tiempo_construccion * math.log(e.nivel_almacen)
+
+	def update_gen(self):
+		for edificio in self:
+			edificio.estado = '6'
+
+	def update_alm(self):
+		for edificio in self:
+			edificio.estado = '7'
+
 	def recolectar_recursos(self):
 
 		for edificio in self:
@@ -303,12 +339,6 @@ class constructed_building(models.Model):
 			edificio.planeta.deuterio += edificio.alm_deuterio
 			edificio.planeta.fosiles += edificio.alm_fosiles
 
-			print("Recolectando: ", edificio.alm_hierro, " hierro")
-			print("Recolectando: ", edificio.alm_cobre, " hierro")
-			print("Recolectando: ", edificio.alm_plata, " hierro")
-			print("Recolectando: ", edificio.alm_oro, " hierro")
-			print("Recolectando: ", edificio.alm_deuterio, " hierro")
-
 			edificio.alm_hierro = 0
 			edificio.alm_cobre = 0
 			edificio.alm_plata = 0
@@ -316,23 +346,41 @@ class constructed_building(models.Model):
 			edificio.alm_deuterio = 0
 			edificio.alm_fosiles = 0
 
+	#[('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'), ('4', 'En reparación'), ('5', 'Destruido'), ('6', '↑ Nivel de producción'), ('7', '↑ Nivel de almacén')])
 	@api.model
 	def cron_update_resources(self):
 		for b in self.search([]):
 			# Updates
 			if b.estado == '1':
 
-				b.tiempo_construccion_restante += 1
+				b.tiempo_restante += 1
 
+				if b.tiempo_restante == b.tiempo_construccion:
+					b.tiempo_restante = 0
+					b.nivel_produccion += 1
+					b.estado = '2'
 
-				if b.tiempo_construccion_restante == b.tiempo_construccion:
+			elif b.estado == '6':
+
+				b.tiempo_restante += 1
+
+				if b.tiempo_restante == b.time_update_gen:
+					b.tiempo_restante = 0
+					b.nivel_produccion += 1
+					b.estado = '2'
+
+			elif b.estado == '7':
+
+				b.tiempo_restante += 1
+
+				if b.tiempo_restante == b.time_update_alm:
+					b.tiempo_restante = 0
 					b.nivel_produccion += 1
 					b.estado = '2'
 
 
-
 			# Generación recursos
-			elif b.estado == '2':
+			if b.estado == '2' or b.estado == '6' or b.estado == '7':
 				if b.alm_hierro < b.alm_hierro_max:
 					b.alm_hierro += b.gen_hierro
 				if b.alm_cobre < b.alm_cobre_max:
@@ -382,7 +430,7 @@ class constructed_starship(models.Model):
 	player = fields.Many2one('odoogame.player', 'Jugador')
 	ubicacion = fields.Many2one('odoogame.planet', 'Planeta')
 
-	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido')],
+	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido'), ('5', 'Subiendo nivel producción'),  ('6', 'Subiendo nivel almacén')],
 					  default='1', string='Estado')
 	vida_actual = fields.Float(string='Vida actual')
 	nivel_almacen = fields.Integer(default=1)
@@ -432,6 +480,5 @@ class planet_img(models.Model):
     image_thumb = fields.Image(related="image", string="ithumb", max_width=100, max_height=100)
 """""
 ps aux | grep /usr/bin/odoo
-ps aux | grep odoo/usr/bin/odoo
 
 """""

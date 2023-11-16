@@ -34,6 +34,8 @@
 					<field name="alm_fosiles"/>
 
 					<button name="recolectar_recursos" type="object" string="Recursos" class="oe_highlight" icon="fa-level-up"/>
+					<button name="update_gen" type="object" string="↑ Gen Level" class="oe_highlight" icon="fa-level-up"/>
+					<button name="update_alm" type="object" string="↑ Alm Level" class="oe_highlight" icon="fa-level-up"/>
 
 				</tree>
 			</field>
@@ -57,7 +59,7 @@
 							<group>
 								<field name="icon" widget="image" class="oe_avatar"/>
 
-
+								<field name="tiempo_restante"/>
 
 							</group>
 						</group>
@@ -71,7 +73,7 @@
 							<group>
 								<field name="vida_actual"/>
 								<field name="energia_funcionamiento"/>
-								<field name="tiempo_construccion_restante"/>
+
 
 							</group>
 
@@ -80,18 +82,20 @@
 
 
 						<group string="Recursos almacenados">
-							<group>
-								<field name="hierro_vs_hierromax"/>
-								<field name="alm_cobre" widget="char"/>
-								<field name="alm_plata" widget="char"/>
+							<group string="Metales:">
+								<field name="hierro_vs_max" attrs="{'invisible': [('gen_hierro', '==', 0)]}"/>
+								<field name="cobre_vs_max" attrs="{'invisible': [('gen_cobre', '==', 0)]}"/>
+								<field name="plata_vs_max" attrs="{'invisible': [('gen_plata', '==', 0)]}"/>
+								<field name="oro_vs_max" attrs="{'invisible': [('gen_oro', '==', 0)]}"/>
 
 							</group>
 
-							<group>
+							<group string="Energéticos:">
 
-								<field name="alm_oro"/>
-								<field name="alm_deuterio"/>
-								<field name="alm_fosiles"/>
+								<field name="deuterio_vs_max" attrs="{'invisible': [('gen_deuterio', '==', 0)]}"/>
+								<field name="fosiles_vs_max" attrs="{'invisible': [('gen_fosiles', '==', 0)]}"/>
+								<field name="gen_energia" attrs="{'invisible': [('gen_energia', '==', 0)]}"/>
+
 							</group>
 						</group>
 
@@ -100,7 +104,7 @@
 						<group string="Generación recursos">
 
 
-							<group string="Metales: ">
+							<group string="Metales:">
 
 								<field name="gen_hierro" attrs="{'invisible': [('gen_hierro', '==', 0)]}"/>
 								<field name="gen_cobre" attrs="{'invisible': [('gen_cobre', '==', 0)]}"/>
