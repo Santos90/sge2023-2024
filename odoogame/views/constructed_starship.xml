@@ -14,10 +14,7 @@
 
 
 					<field name="estado"/>
-					<field name="vida_actual"/>
 
-					<field name="nivel_almacen"/>
-					<field name="atacando_en_batalla"/>
 
 				</tree>
 			</field>
@@ -42,9 +39,7 @@
 								<field name="icon" widget="image" class="oe_avatar"/>
 
 					<field name="estado"/>
-					<field name="vida_actual"/>
 
-					<field name="atacando_en_batalla"/>
 
 							</group>
 						</group>
@@ -52,11 +47,11 @@
 						<group string="Atributos">
 							<group>
 
-								<field name="nivel_almacen"/>
+
 
 							</group>
 							<group>
-								<field name="vida_actual"/>
+
 
 
 							</group>
@@ -103,10 +98,6 @@
 					<field name="player"/>
 
 					<field name="estado"/>
-					<field name="vida_actual"/>
-
-					<field name="nivel_almacen"/>
-					<field name="atacando_en_batalla"/>
 
 				</search>
 			</field>

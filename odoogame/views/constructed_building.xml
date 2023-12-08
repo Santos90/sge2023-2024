@@ -83,7 +83,7 @@
 
 						<group string="Recursos almacenados">
 							<group string="Metales:">
-								<field name="hierro_vs_max" attrs="{'invisible': [('gen_hierro', '==', 0)]}"/>
+								<field name="hierro_vs_max" attrs="{'invisible': [('hierro_vs_max', '==', '0/0')]}"/>
 								<field name="cobre_vs_max" attrs="{'invisible': [('gen_cobre', '==', 0)]}"/>
 								<field name="plata_vs_max" attrs="{'invisible': [('gen_plata', '==', 0)]}"/>
 								<field name="oro_vs_max" attrs="{'invisible': [('gen_oro', '==', 0)]}"/>

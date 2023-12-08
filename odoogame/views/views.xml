@@ -58,11 +58,32 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+        <record model="ir.actions.act_window" id="odoogame.action_defense_type">
+      <field name="name">Gestión Tipos de Defensas</field>
+      <field name="res_model">odoogame.defense_type</field>
+      <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_constructed_defense">
+      <field name="name">Gestión Defensas Construidas</field>
+      <field name="res_model">odoogame.constructed_defense</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+
     <record model="ir.actions.act_window" id="odoogame.action_battle">
-      <field name="name">Gestión Batallas</field>
-      <field name="res_model">odoogame.battle</field>
+      <field name="name">Gestión Misiones</field>
+      <field name="res_model">odoogame.mission</field>
       <field name="view_mode">tree,form,calendar</field>
     </record>
+
+    <record model="ir.actions.act_window" id="odoogame.action_hangar_tail_defense">
+      <field name="name">Gestión Cola Hangar Defensas</field>
+      <field name="res_model">odoogame.hangar_tail_defense</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
 
 
     <!-- server action to the one above -->
@@ -97,7 +118,7 @@
               action="odoogame.action_player"/>
     <menuitem name="Galaxias" id="odoogame.menu_gestion_galaxy" parent="odoogame.menu_gestion"
               action="odoogame.action_galaxy"/>
-    <menuitem name="Stars" id="odoogame.menu_gestion_star" parent="odoogame.menu_gestion"
+    <menuitem name="Estrellas" id="odoogame.menu_gestion_star" parent="odoogame.menu_gestion"
               action="odoogame.action_star"/>
     <menuitem name="Planetas" id="odoogame.menu_gestion_planet" parent="odoogame.menu_gestion"
               action="odoogame.action_planet"/>
@@ -111,8 +132,18 @@
     <menuitem name="Naves construidas" id="odoogame.menu_gestion_constructed_starship" parent="odoogame.menu_gestion"
               action="odoogame.action_constructed_starship"/>
 
+    <menuitem name="Tipos de defensas" id="odoogame.menu_gestion_defense_type" parent="odoogame.menu_gestion"
+              action="odoogame.action_defense_type"/>
+    <menuitem name="Defensas construidas" id="odoogame.menu_gestion_constructed_defense" parent="odoogame.menu_gestion"
+              action="odoogame.action_constructed_defense"/>
+
     <menuitem name="Batallas" id="odoogame.menu_gestion_battle" parent="odoogame.menu_gestion"
               action="odoogame.action_battle"/>
+
+    <menuitem name="Cola Construccion Defensas" id="odoogame.menu_gestion_hangar_tail_defense" parent="odoogame.menu_gestion"
+              action="odoogame.action_hangar_tail_defense"/>
+
+
 
   </data>
 </odoo>

@@ -3,6 +3,7 @@
 
         <record id="odoogame_player_xxjcaxx"  model="odoogame.player">
             <field name="name">xxjcaxx</field>
+            <field name="incorporacion_al_servidor" eval="(datetime.now()+timedelta(-1)).strftime('%Y-%m-%d')"/>
             <field name="icon">iVBORw0KGgoAAAANSUhEUgAAAcwAAAHMCAIAAADXuQ/RAAAPa0lEQVR4nOzdb6ie913H8ZwtZ121
 zR/ao+ufnSRt1mLLSl1R2yaNjYExmMYOZgeKMEboGMEHFuYDQZI8Uib4RESUKIWh0FowyzYZ0y0u
 SZs66Niqrcmxbf65ju0M82fTxiTbkflE3PW729/V63yu677v83o9/HHf1/mdpHlzUb78fquXlpZW

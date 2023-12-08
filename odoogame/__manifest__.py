@@ -26,7 +26,9 @@
     'data': [
         'security/ir.model.access.csv',
         'controllers/cron.xml',
+
         'views/building_type.xml',
+        'views/defense_type.xml',
         'views/starship_type.xml',
         'views/planet.xml',
         'views/constructed_building.xml',
@@ -36,13 +38,15 @@
         'views/views.xml',
         'views/templates.xml',
 
+        'data/data_building_type.xml',
+        'data/data_starship_type.xml',
+        'data/data_defense_type.xml',
+        'data/planets_img_data.xml'
 
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
-        'demo/demo_building_type.xml',
-        'demo/demo_starship_type.xml',
-        'demo/planets_img_demo.xml'
+
     ],
 }

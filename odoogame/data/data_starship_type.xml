@@ -4,6 +4,10 @@
         <record id="odoogame_nave_nave_batalla" model="odoogame.starship_type">
             <field name="name">Nave de batalla</field>
             <field name="vida_inicial">100</field>
+
+            <field name="ataque">5</field>
+            <field name="defensa">3</field>
+
             <field name="coste_hierro">350</field>
             <field name="coste_cobre">50</field>
             <field name="coste_plata">15</field>
@@ -13,6 +17,9 @@
         <record id="odoogame_nave_crucero" model="odoogame.starship_type">
             <field name="name">Crucero</field>
             <field name="vida_inicial">300</field>
+            <field name="ataque">15</field>
+            <field name="defensa">7</field>
+
             <field name="coste_hierro">650</field>
             <field name="coste_cobre">90</field>
             <field name="coste_plata">25</field>
@@ -23,6 +30,10 @@
         <record id="odoogame_nave_acorazado" model="odoogame.starship_type">
             <field name="name">Acorazado</field>
             <field name="vida_inicial">550</field>
+
+            <field name="ataque">20</field>
+            <field name="defensa">15</field>
+
             <field name="coste_hierro">950</field>
             <field name="coste_cobre">120</field>
             <field name="coste_plata">40</field>
@@ -33,6 +44,10 @@
         <record id="odoogame_nave_bombardeo" model="odoogame.starship_type">
             <field name="name">Bombardeo</field>
             <field name="vida_inicial">900</field>
+
+            <field name="ataque">25</field>
+            <field name="defensa">12</field>
+
             <field name="coste_hierro">1500</field>
             <field name="coste_cobre">240</field>
             <field name="coste_plata">100</field>

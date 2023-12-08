@@ -3,52 +3,55 @@
 
 
 
- <record model="ir.ui.view" id="odoogame.battle_calendar">
+        <record model="ir.ui.view" id="odoogame.battle_calendar">
             <field name="name">Calendario Batallas</field>
-            <field name="model">odoogame.battle</field>
+            <field name="model">odoogame.mission</field>
             <field name="arch" type="xml">
                 <calendar string="Session Calendar"
-                          date_start="start"
-                          date_delay="duration"
-                          color="atacante">
-                    <field name="atacante"/>
-                    <field name="defensor"/>
+                          date_start="salida"
+                          date_delay="llegada"
+                          color="mision">
+                    <field name="origen"/>
+                    <field name="destino"/>
                 </calendar>
             </field>
         </record>
 
 
         <record model="ir.ui.view" id="odoogame.battle_list">
-            <field name="name">Battle list</field>
-            <field name="model">odoogame.battle</field>
+            <field name="name">Mission list</field>
+            <field name="model">odoogame.mission</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="origen"/>
+                    <field name="destino"/>
+                    <field name="salida"/>
+                    <field name="llegada"/>
+                    <field name="retorno"/>
+                    <field name="mision"/>
 
-                    <field name="start"/>
-                    <field name="duration"/>
-                    <field name="atacante"/>
-                    <field name="defensor"/>
                 </tree>
             </field>
         </record>
 
 
         <record model="ir.ui.view" id="odoogame.battle_form">
-            <field name="name">Battle form</field>
-            <field name="model">odoogame.battle</field>
+            <field name="name">Mission form</field>
+            <field name="model">odoogame.mission</field>
             <field name="arch" type="xml">
                 <form string="Course Form">
                     <sheet>
                         <group string="Información básica">
                             <group>
-
-                                <field name="start"/>
-                                <field name="duration"/>
+                                <field name="origen"/>
+                                <field name="destino"/>
+                                <field name="mision"/>
 
                             </group>
                             <group>
-                                <field name="atacante"/>
-                                <field name="defensor"/>
+                                <field name="salida"/>
+                                <field name="llegada"/>
+                                <field name="retorno"/>
                             </group>
 
 
@@ -57,7 +60,7 @@
 
                         <notebook>
                             <page string="FLota de ataque">
-                                <field name="flotas_atacantes"/>
+                                <field name="flota"/>
                             </page>
 
                         </notebook>

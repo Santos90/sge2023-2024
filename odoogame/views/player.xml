@@ -30,6 +30,8 @@
                             <group>
                                 <field name="name"/>
                                 <field name="description"/>
+                                <field name="incorporacion_al_servidor"/>
+
                             </group>
                             <group>
                                 <field name="icon" widget="image" class="oe_avatar"/>
