@@ -9,8 +9,8 @@
 
 					<field name="type"/>
 
-					<field name="ubicacion"/>
-					<field name="player"/>
+					<field name="planeta"/>
+					<field name="jugador"/>
 
 
 					<field name="estado"/>
@@ -31,14 +31,14 @@
 							<group>
 								<field name="type"/>
 
-								<field name="ubicacion"/>
-								<field name="player"/>
+								<field name="planeta"/>
+								<field name="jugador"/>
 
 							</group>
 							<group>
 								<field name="icon" widget="image" class="oe_avatar"/>
 
-					<field name="estado"/>
+								<field name="estado"/>
 
 
 							</group>
@@ -59,25 +59,25 @@
 						</group>
 
 
-<!--
-						<group string="Coste recursos">
+						<!--
+												<group string="Coste recursos">
 
-							<group>
-								<field name="coste_hierro"/>
-								<field name="coste_cobre"/>
+													<group>
+														<field name="coste_hierro"/>
+														<field name="coste_cobre"/>
 
 
-							</group>
-							<group>
+													</group>
+													<group>
 
-								<field name="coste_plata"/>
-								<field name="coste_oro"/>
+														<field name="coste_plata"/>
+														<field name="coste_oro"/>
 
-							</group>
+													</group>
 
-						</group>
+												</group>
 
--->
+						-->
 
 					</sheet>
 				</form>
@@ -88,16 +88,21 @@
 
 
 		<record model="ir.ui.view" id="odoogame.constructed_starship_search">
-			<field name="name">Tipos de Edificio</field>
+			<field name="name">Filtos predefinidos: Modelo constructed_starship</field>
 			<field name="model">odoogame.constructed_starship</field>
 			<field name="arch" type="xml">
 				<search>
+					<group string="Group By">
+						<filter name="group_by_player" string="Jugador" context="{'group_by': 'jugador'}"/>
+					</group>
+					<group string="Group By">
+						<filter name="group_by_planet" string="Planeta" context="{'group_by': 'planeta'}"/>
+					</group>
+
 					<field name="type"/>
+					<field name="planeta"/>
+					<field name="jugador"/>
 
-					<field name="ubicacion"/>
-					<field name="player"/>
-
-					<field name="estado"/>
 
 				</search>
 			</field>

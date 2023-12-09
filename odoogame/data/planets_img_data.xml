@@ -1,4 +1,6 @@
 <odoo><data>
+
+
 	<record id="odoogame.planet_03AGM2016EXP74" model="odoogame.planet_img">
 		<field name="name">03AGM2016EXP74</field>
 		<field name="image">/9j/4AAQSkZJRgABAQEBLAEsAAD/7SN0UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAADccAVoAAxsl

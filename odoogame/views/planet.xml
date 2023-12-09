@@ -32,11 +32,11 @@
                             <group>
                                 <field name="name"/>
                                 <field name="jugador"/>
-
+                                <field name="star"/>
                             </group>
                             <group>
                                 <field name="icon" widget="image" class="oe_avatar"/>
-                                <field name="star"/>
+
                                 <field name="galaxy"/>
                             </group>
 
@@ -131,7 +131,16 @@
                                     </h4>
                                     <ul>
 
-                                        <li>Star: <field name="star"></field></li>
+                                        <li>
+                                            Star: <field name="star"/>
+
+                                        </li>
+
+                                            <field name="oro" editable="true"/>
+                                            <field name="plata" editable="true"/>
+                                            <field name="cobre" editable="true"/>
+                                            <field name="hierro" editable="true"/>
+
                                     </ul>
                                 </div>
                             </div>
@@ -158,9 +167,5 @@
                 </search>
             </field>
         </record>
-
-
-
-
     </data>
 </odoo>

@@ -1,7 +1,7 @@
 <odoo>
     <data>
         <record model="ir.ui.view" id="odoogame.players_list">
-            <field name="name">Plaayer list</field>
+            <field name="name">Player list</field>
             <field name="model">odoogame.player</field>
             <field name="arch" type="xml">
                 <tree>

@@ -37,6 +37,7 @@
         'views/battle.xml',
         'views/views.xml',
         'views/templates.xml',
+        'views/hangar_tail_defense.xml',
 
         'data/data_building_type.xml',
         'data/data_starship_type.xml',
@@ -47,6 +48,8 @@
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
+
+
 
     ],
 }

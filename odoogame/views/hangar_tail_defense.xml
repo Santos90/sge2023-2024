@@ -1,0 +1,67 @@
+<odoo>
+
+	<data>
+		<record model="ir.ui.view" id="odoogame.hangar_tail_defense_list">
+			<field name="name">Cola de construcción de elementos defensivos</field>
+			<field name="model">odoogame.hangar_tail_defense</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="defensa"/>
+					<field name="cantidad"/>
+					<field name="tiempo_transcurrido"/>
+					<field name="duracion"/>
+					<field name="max"/>
+				</tree>
+			</field>
+		</record>
+
+
+		<record model="ir.ui.view" id="odoogame.hangar_tail_defense_form">
+			<field name="name">Tipo de Edificio</field>
+			<field name="model">odoogame.hangar_tail_defense</field>
+			<field name="arch" type="xml">
+				<form string="Course Form">
+					<sheet>
+						<group string="Información básica">
+							<group>
+
+								<field name="defensa"/>
+								<field name="cantidad"/>
+
+
+							</group>
+
+							<group>
+								<field name="tiempo_transcurrido"/>
+
+								<field name="max"/>
+
+							</group>
+						</group>
+
+						<group string="Costes">
+
+							<group>
+								<field name="coste_hierro"/>
+								<field name="coste_cobre"/>
+							</group>
+
+
+
+							<group>
+								<field name="coste_plata"/>
+								<field name="coste_oro"/>
+							</group>
+						</group>
+
+
+
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+
+	</data>
+
+</odoo>
