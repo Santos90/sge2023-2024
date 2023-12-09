@@ -451,6 +451,7 @@ class starship_type(models.Model):
 class constructed_starship(models.Model):
 	_name = 'odoogame.constructed_starship'
 	_description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
+	name = fields.Char(string='Nombre', compute='set_name')
 	type = fields.Many2one('odoogame.starship_type', string="Tipo de nave")
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
 
@@ -460,13 +461,15 @@ class constructed_starship(models.Model):
 	cantidad = fields.Integer(string='Unidades', default=0)
 
 	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido'),
-	                           ('5', 'Subiendo nivel producción'), ('6', 'Subiendo nivel almacén')],
-	                          default='1', string='Estado')
+	                           ('5', 'Subiendo nivel producción'), ('6', 'Subiendo nivel almacén')], default='1', string='Estado')
 
 	vida_actual = fields.Float(string='Vida actual')
 	nivel_almacen = fields.Float(default=1)
 
-# atacando_en_batalla = fields.Many2one('odoogame.battle', string='En ataque')
+	@api.depends('type', 'planeta')
+	def set_name(self):
+		for f in self:
+			f.name = str(f.planeta.name) + " - " + str(f.type.name)
 
 
 class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a contruir
@@ -492,7 +495,7 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 	@api.depends('nave', 'cantidad')
 	def set_name(self):
 		for f in self:
-			f.name = str(f.nave.name) + "-" + str(f.cantidad)
+			f.name = str(f.nave.name) + " - " + str(f.cantidad)
 
 	@api.depends('nave', 'cantidad')
 	def _compute_fechas(self):
@@ -591,7 +594,7 @@ class constructed_defense(models.Model):
 	name = fields.Char(string='Nombre', compute='set_name')
 	type = fields.Many2one('odoogame.defense_type', string="Tipo de defensa")
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
-
+	jugador = fields.Many2one(related="planeta.jugador", string="jugador")
 	# Rel 4
 
 	planeta = fields.Many2one('odoogame.planet', string='Planeta')
@@ -603,7 +606,7 @@ class constructed_defense(models.Model):
 	def set_name(self):
 		print("Nueva instancia 'constructed_defense'")
 		for f in self:
-			f.name = str(f.planeta.name) + "-" + str(f.type.name)
+			f.name = str(f.planeta.name) + " - " + str(f.type.name)
 			print("Nombre: ", str(f.type.name))
 
 
@@ -630,7 +633,7 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	@api.depends('defensa', 'cantidad')
 	def set_name(self):
 		for f in self:
-			f.name = str(f.defensa.name) + "-" + str(f.cantidad)
+			f.name = str(f.defensa.name) + " - " + str(f.cantidad)
 
 	@api.depends('defensa', 'cantidad')
 	def _compute_fechas(self):

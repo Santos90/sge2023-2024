@@ -2,7 +2,6 @@
 	<data>
 
 		<record model="ir.ui.view" id="odoogame.constructed_starship_list">
-			<field name="name">Tipos de Edificio</field>
 			<field name="model">odoogame.constructed_starship</field>
 			<field name="arch" type="xml">
 				<tree>
@@ -13,7 +12,7 @@
 					<field name="jugador"/>
 
 
-					<field name="estado"/>
+					<field name="cantidad"/>
 
 
 				</tree>
@@ -22,7 +21,6 @@
 
 
 		<record model="ir.ui.view" id="odoogame.constructed_starship_form">
-			<field name="name">Tipo de Edificio</field>
 			<field name="model">odoogame.constructed_starship</field>
 			<field name="arch" type="xml">
 				<form string="Course Form">
@@ -33,12 +31,12 @@
 
 								<field name="planeta"/>
 								<field name="jugador"/>
-
+<field name="cantidad"/>
 							</group>
 							<group>
 								<field name="icon" widget="image" class="oe_avatar"/>
 
-								<field name="estado"/>
+
 
 
 							</group>

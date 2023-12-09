@@ -33,6 +33,7 @@
         'views/planet.xml',
         'views/constructed_building.xml',
         'views/constructed_starship.xml',
+        'views/constructed_defense.xml',
         'views/player.xml',
         'views/battle.xml',
         'views/views.xml',
