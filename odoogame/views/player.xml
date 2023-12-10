@@ -43,12 +43,12 @@
                         <notebook>
                             <page string="Planetas">
                                 <field name="planetas"/>
-
+<button name="generate_planet" type="object" string="Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
                             </page>
 
-<button name="generate_planet" type="object" string="Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
+
                         </notebook>
-                        <button name="generate_planet" type="object" string="Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
+
                         <group string="Recursos Totales">
 
 
@@ -59,9 +59,6 @@
                                 <field name="plata_total"/>
                                 <field name="oro_total"/>
                             </group>
-
-
-
 
                             <group string="Combustibles:">
 

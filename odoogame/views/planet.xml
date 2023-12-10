@@ -90,8 +90,12 @@
                                 <button name="recolectar_recursos" type="object" string="Recolectar recursos" class="oe_highlight" icon="fa-level-up"/>
                             </page>
 
-                            <page string="Naves">
-                                <field name="naves"/>
+                            <page string="Defensas">
+                                <field name="defensas"/>
+                            </page>
+
+                            <page string="Flotas">
+                                <field name="flotas"/>
                             </page>
 
                         </notebook>

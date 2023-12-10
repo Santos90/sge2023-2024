@@ -44,7 +44,12 @@ class player(models.Model):
 	deuterio_total = fields.Float(string="Deuterio", compute='_recuento_recursos')
 	fosiles_total = fields.Float(string="Comb. Fósiles", compute='_recuento_recursos')
 
-	# i sempre es recalcula quan executem un action que el mostra
+
+	@api.model
+	def create(self, values):
+		new_player = super(player, self).create(values)
+		new_player.generate_planet()
+		return new_player
 
 	def generate_planet(self):  # descubrir planeta
 		for p in self:
@@ -52,25 +57,29 @@ class player(models.Model):
 			random.shuffle(planet_img)
 			stars = self.env['odoogame.star'].search([]).ids
 			random.shuffle(stars)
+
 			planeta = p.planetas.create({
 				"name": "Colonia " + str(p.id),
 				"icon": self.env['odoogame.planet_img'].browse(planet_img[0]).image,
 				"jugador": p.id,
 				"star": stars[0]
 			})
+			flota = planeta.flotas.create({
+				"jugador": p.id,
+				'ubi_actual': planeta.id,
+			})
 
 			tipos_naves = self.env['odoogame.starship_type'].search([])
 			for n in tipos_naves:
-				nave = planeta.naves.create({
+				nave = flota.naves.create({
 					"type": n.id,
-					"planeta": planeta.id,
-					"jugador": p.id
+					"flota": flota.id
 				})
 
 			tipos_defensas = self.env['odoogame.defense_type'].search([])
-			for n in tipos_defensas:
+			for d in tipos_defensas:
 				defensa = planeta.defensas.create({
-					"type": n.id,
+					"type": d.id,
 					"planeta": planeta.id,
 				})
 
@@ -139,7 +148,8 @@ class planet(models.Model):
 
 	# Rel 4
 	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos")
-	naves = fields.One2many('odoogame.constructed_starship', 'planeta', string="Naves estacionadas")
+	#naves = fields.One2many('odoogame.constructed_starship', 'planeta', string="Naves estacionadas")
+	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Naves estacionadas")
 	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas")
 
 	hierro = fields.Float(string='Hierro')
@@ -333,7 +343,6 @@ class constructed_building(models.Model):
 			e.energia_funcionamiento = e.type.energia_funcionamiento + e.type.energia_funcionamiento * math.log(
 				e.nivel_produccion)
 
-			print("Gen Hierro: ", e.type.gen_hierro)
 
 	@api.depends('nivel_almacen')
 	def _calculo_por_nivel_almacen(self):
@@ -377,6 +386,7 @@ class constructed_building(models.Model):
 	# [('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'), ('4', 'En reparación'), ('5', 'Destruido'), ('6', '↑ Nivel de producción'), ('7', '↑ Nivel de almacén')])
 	@api.model
 	def cron_update_resources(self):
+		print("cron_update_resources")
 		for b in self.search([]):
 			# Updates
 			if b.estado == '1':
@@ -451,26 +461,27 @@ class starship_type(models.Model):
 class constructed_starship(models.Model):
 	_name = 'odoogame.constructed_starship'
 	_description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
+
 	name = fields.Char(string='Nombre', compute='set_name')
 	type = fields.Many2one('odoogame.starship_type', string="Tipo de nave")
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
 
 	# Rel 4
-	jugador = fields.Many2one('odoogame.player', 'Jugador')
-	planeta = fields.Many2one('odoogame.planet', 'Planeta')
+	jugador = fields.Many2one('odoogame.player', 'Jugador', related='flota.jugador')
+	planeta = fields.Many2one('odoogame.planet', 'Planeta', related='flota.ubi_actual' )
 	cantidad = fields.Integer(string='Unidades', default=0)
+	flota = fields.Many2one('odoogame.flota', 'Flota', help='Este conjunto de naves forma parte de una flota')
+
 
 	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'En reparación'), ('4', 'Destruido'),
 	                           ('5', 'Subiendo nivel producción'), ('6', 'Subiendo nivel almacén')], default='1', string='Estado')
-
 	vida_actual = fields.Float(string='Vida actual')
 	nivel_almacen = fields.Float(default=1)
 
-	@api.depends('type', 'planeta')
+	@api.depends('type', 'cantidad')
 	def set_name(self):
 		for f in self:
-			f.name = str(f.planeta.name) + " - " + str(f.type.name)
-
+			f.name = str(f.type.name) + " - " + str(f.cantidad)
 
 class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a contruir
 	_name = 'odoogame.hangar_tail_starship'
@@ -479,7 +490,7 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 
 	# relacion: Elemento a contruir "es de 1 tipo"...
 	nave = fields.Many2one('odoogame.constructed_starship')
-	cantidad = fields.Integer(default=1)
+	cantidad = fields.Integer(default=0)
 	max = fields.Integer(compute='_compute_costes')
 
 	fin = fields.Datetime(string="Fin de la construccion")
@@ -502,8 +513,8 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 		for f in self:
 			f.duracion = f.cantidad * f.nave.type.tiempo_construccion
 
-	@api.depends('cantidad', 'nave', 'nave.planeta.hierro', 'nave.planeta.cobre', 'nave.planeta.plata',
-	             'nave.planeta.oro')
+	@api.depends('cantidad', 'nave', 'nave.flota.ubi_actual.hierro', 'nave.flota.ubi_actual.cobre', 'nave.flota.ubi_actual.plata',
+	             'nave.flota.ubi_actual.oro')
 	def _compute_costes(self):
 		for f in self:
 			f.coste_hierro = f.cantidad * f.nave.type.coste_hierro
@@ -513,22 +524,22 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 
 			min = sys.maxsize  # calculamos el máximo de naves de un tipo q se pueden construir según el recurso 'limitante' del planeta
 			if f.nave.type.coste_hierro > 0:
-				cant = f.nave.planeta.hierro / f.nave.type.coste_hierro
+				cant = f.nave.flota.ubi_actual.hierro / f.nave.type.coste_hierro
 
 				if cant < min:
 					min = cant
 			if f.nave.type.coste_cobre > 0:
-				cant = f.nave.planeta.cobre / f.nave.type.coste_cobre
+				cant = f.nave.flota.ubi_actual.cobre / f.nave.type.coste_cobre
 
 				if cant < min:
 					min = cant
 			if f.nave.type.coste_plata > 0:
-				cant = f.nave.planeta.plata / f.nave.type.coste_plata
+				cant = f.nave.flota.ubi_actual.plata / f.nave.type.coste_plata
 
 				if cant < min:
 					min = cant
 			if f.nave.type.coste_oro > 0:
-				cant = f.nave.planeta.oro / f.nave.type.coste_oro
+				cant = f.nave.flota.ubi_actual.oro / f.nave.type.coste_oro
 
 				if cant < min:
 					min = cant
@@ -536,12 +547,12 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 			f.max = min
 
 	@api.model
-	def cron_update_defense_construction(self):
+	def cron_update_starship_construction(self):
 		planetas = self.env['odoogame.planet'].search([]).ids
-		print("Cron cola defenses")
+		print("Cron cola naus")
 		for p in planetas:
 			primer_elemento = self.env['odoogame.hangar_tail_defense'].search(
-				[('nave.planeta', '=', p)]
+				[('nave.flota.ubi_actual', '=', p)]
 				, limit=1
 			)
 			primer_elemento.tiempo_transcurrido += 1
@@ -555,14 +566,23 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 
 	@api.model  # al crear una instancia del modelo se restan los recursos del planeta. No modificar una vez creada (bug)
 	def create(self, values):
-		new_id = super(hangar_tail_defense, self).create(values)
+		new_id = super(hangar_tail_starship, self).create(values)
 
-		new_id.nave.planeta.hierro -= new_id.coste_hierro
-		new_id.nave.planeta.cobre -= new_id.coste_cobre
-		new_id.nave.planeta.plata -= new_id.coste_plata
-		new_id.nave.planeta.oro -= new_id.coste_oro
+		new_id.nave.flota.ubi_actual.hierro -= new_id.coste_hierro
+		new_id.nave.flota.ubi_actual.cobre -= new_id.coste_cobre
+		new_id.nave.flota.ubi_actual.plata -= new_id.coste_plata
+		new_id.nave.flota.ubi_actual.oro -= new_id.coste_oro
 
 		return new_id
+
+class flota(models.Model):
+	_name = 'odoogame.flota'
+	_description = 'Flota de un jugador en un planeta'
+
+	jugador = fields.Many2one('odoogame.player', 'Jugador')
+	ubi_actual = fields.Many2one('odoogame.planet', string='Planeta')
+	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves')
+
 
 
 # tiempo_reparacion = fields.datetime(compute=)
@@ -703,19 +723,12 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 		return new_id
 
 
-class flota(models.Model):
-	_name = 'odoogame.flota'
-	_description = 'Flota de un jugador en un planeta'
-
-	planeta = fields.Many2one('odoogame.planet', string='Planeta')
-# naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves atacantes')
-
-
 class mission(models.Model):
 	_name = 'odoogame.mission'
 	_description = 'Flota desplazándose con un objetivo o misión'
 	origen = fields.Many2one('odoogame.planet', string='Origen')
 	destino = fields.Many2one('odoogame.planet', string='Destino')
+	ubi_actual = fields.Many2one('odoogame.planet', string='Ubicacion actual')
 
 	salida = fields.Datetime(string='Inicio', default=lambda self: fields.Datetime.now())
 	llegada = fields.Datetime(string='Llegada', compute='compute_dates')
@@ -726,6 +739,79 @@ class mission(models.Model):
 	                          default='1', string='Misión')
 
 	flota = fields.One2many('odoogame.flota', 'id', string='Flotas atacantes')
+
+	@api.depends('salida')
+	def compute_dates(self):
+		for f in self:
+			tiempo_desplazamiento=3
+			salida = fields.Datetime.from_string( f.salida)
+			f.llegada = fields.Datetime.to_string( salida + timedelta(minutes=tiempo_desplazamiento))
+			f.retorno = fields.Datetime.to_string( salida + timedelta(minutes=tiempo_desplazamiento*2))
+
+
+	@api.model
+	def cron_update_mission(self):
+		for mision in self.search([]):
+			if fields.Datetime.now() > mision.end:
+				mision.ubi_actual = mision.destino
+
+				defensas_destino = self.env['odoogame.constructed_defenses'].search([('planeta', '=', mision.destino)])
+				naves_destino = self.env['odoogame.flota'].search([('ubi_actual', '=', mision.destino)])
+
+				ataque_defensor = 0
+				defensa_defensor = 0
+				ataque_atacante = 0
+				defensa_atacante = 0
+
+				for dd in defensas_destino:
+					ataque_defensor += dd.type.ataque
+					defensa_defensor += dd.type.defensa
+				for dd in naves_destino:
+					ataque_defensor += dd.type.ataque
+					defensa_defensor += dd.type.defensa
+
+				for dd in mision.flota.naves:
+					ataque_atacante += dd.type.ataque
+					defensa_atacante += dd.type.defensa
+
+				puntos_atacante = 0
+				puntos_defensor = 0
+				if (ataque_defensor > ataque_atacante): puntos_defensor += 1
+				if (ataque_defensor > defensa_atacante): puntos_defensor += 2
+				if (ataque_atacante > ataque_defensor): puntos_atacante += 1
+				if (ataque_atacante > defensa_defensor): puntos_atacante += 2
+
+				ganador = None
+				porcentaje_ganado = 50/100
+				if puntos_atacante > puntos_defensor:
+					ganador = mision.destino.jugador
+
+					metal_ganado = mision.destino.metal * porcentaje_ganado
+					cobre_ganado = mision.destino.cobre * porcentaje_ganado
+					plata_ganado = mision.destino.plata * porcentaje_ganado
+					oro_ganado = mision.destino.oro * porcentaje_ganado
+					deuterio_ganado = mision.destino.deuterio * porcentaje_ganado
+					fosiles_ganado = mision.destino.fosiles * porcentaje_ganado
+
+					mision.destino.metal -= metal_ganado
+					mision.destino.cobre -= cobre_ganado
+					mision.destino.plata -= plata_ganado
+					mision.destino.oro -= oro_ganado
+					mision.destino.deuterio -= deuterio_ganado
+					mision.destino.fosiles -= fosiles_ganado
+
+					mision.origen.metal += metal_ganado
+					mision.origen.cobre += cobre_ganado
+					mision.origen.plata += plata_ganado
+					mision.origen.oro += oro_ganado
+					mision.origen.deuterio += deuterio_ganado
+					mision.origen.fosiles += fosiles_ganado
+
+				if puntos_atacante < puntos_defensor:
+					ganador = mision.origen.jugador
+					print("Batalla!!")
+				return ganador
+
 
 	@api.constrains('origen', 'destino')
 	def _constrain_origen_vs_destino(self):

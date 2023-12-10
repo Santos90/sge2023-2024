@@ -8,8 +8,8 @@
 
 					<field name="type"/>
 
-					<field name="planeta"/>
-					<field name="jugador"/>
+					<field name="flota"/>
+
 
 
 					<field name="cantidad"/>
@@ -29,9 +29,8 @@
 							<group>
 								<field name="type"/>
 
-								<field name="planeta"/>
-								<field name="jugador"/>
-<field name="cantidad"/>
+								<field name="flota"/>
+								<field name="cantidad"/>
 							</group>
 							<group>
 								<field name="icon" widget="image" class="oe_avatar"/>
@@ -94,12 +93,12 @@
 						<filter name="group_by_player" string="Jugador" context="{'group_by': 'jugador'}"/>
 					</group>
 					<group string="Group By">
-						<filter name="group_by_planet" string="Planeta" context="{'group_by': 'planeta'}"/>
+						<filter name="group_by_flota" string="Flota" context="{'group_by': 'flota'}"/>
 					</group>
 
 					<field name="type"/>
-					<field name="planeta"/>
-					<field name="jugador"/>
+					<field name="flota"/>
+
 
 
 				</search>
