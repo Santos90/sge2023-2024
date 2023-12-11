@@ -91,7 +91,16 @@
                             </page>
 
                             <page string="Defensas">
-                                <field name="defensas"/>
+                                <notebook>
+                                    <page string="Construidas">
+                                        <field name="defensas"/>
+                                    </page>
+                                    <page string="En construcción">
+                                        <field name="cola_defensas"/>
+                                    </page>
+
+                                </notebook>
+
                             </page>
 
                             <page string="Flotas">

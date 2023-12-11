@@ -2,6 +2,8 @@
 	<data>
 
 		<record model="ir.ui.view" id="odoogame.constructed_starship_list">
+			<field name="name">aaaa</field>
+
 			<field name="model">odoogame.constructed_starship</field>
 			<field name="arch" type="xml">
 				<tree>
@@ -21,6 +23,8 @@
 
 
 		<record model="ir.ui.view" id="odoogame.constructed_starship_form">
+			<field name="name">aaaa</field>
+
 			<field name="model">odoogame.constructed_starship</field>
 			<field name="arch" type="xml">
 				<form string="Course Form">

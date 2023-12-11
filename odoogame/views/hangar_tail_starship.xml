@@ -1,12 +1,12 @@
 <odoo>
 
 	<data>
-		<record model="ir.ui.view" id="odoogame.hangar_tail_defense_list">
-			<field name="name">Cola de construcción de elementos defensivos</field>
-			<field name="model">odoogame.hangar_tail_defense</field>
+		<record model="ir.ui.view" id="odoogame.hangar_tail_starship_list">
+			<field name="name">Cola de construcción de naves</field>
+			<field name="model">odoogame.hangar_tail_starship</field>
 			<field name="arch" type="xml">
 				<tree>
-					<field name="defensa"/>
+					<field name="nave"/>
 					<field name="cantidad"/>
 					<field name="tiempo_transcurrido"/>
 					<field name="duracion"/>
@@ -16,17 +16,18 @@
 		</record>
 
 
-		<record model="ir.ui.view" id="odoogame.hangar_tail_defense_form">
-			<field name="name">Cola de construcción de elementos defensivos</field>
-			<field name="model">odoogame.hangar_tail_defense</field>
+		<record model="ir.ui.view" id="odoogame.hangar_tail_starship_form">
+			<field name="name">Cola de construcción de naves</field>
+			<field name="model">odoogame.hangar_tail_starship</field>
 			<field name="arch" type="xml">
 				<form string="Course Form">
 					<sheet>
 						<group string="Información básica">
 							<group>
 
-								<field name="defensa"/>
+								<field name="nave"/>
 								<field name="cantidad"/>
+					<field name="duracion"/>
 
 
 							</group>

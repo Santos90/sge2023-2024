@@ -17,26 +17,25 @@ class server(models.Model):
 
 	name = fields.Char(required=True)
 	# Rel 0. Un servidor tiene muchos jugadores
-	players = fields.One2many('odoogame.player', 'server', "Jugadores")
+	players = fields.One2many('odoogame.player', 'server', "Jugadores", delegate=True)
 
 
 class player(models.Model):
 	_name = 'odoogame.player'
 	_description = 'Usuarios del juego.'
 
-	incorporacion_al_servidor = fields.Datetime(readonly=True)
-
-	name = fields.Char(required=True)
-	#     value = fields.Integer()
-	#     value2 = fields.Float(compute="_value_pc", store=True)
-	description = fields.Text()
+	incorporacion_al_servidor = fields.Date(readonly=True)
+	red_social = fields.Html()
+	name = fields.Char(required=True, size=24)
+	description = fields.Text(string="Descripción")
 	icon = fields.Image(max_width=300, max_height=300, string=" ")
 
 	# Rel 0. Un servidor tiene muchos jugadores
 	server = fields.Many2one('odoogame.server', string="Servidor", ondelete='restrict')
 	# Rel 3. Un jugador ocupa palnetas
 	planetas = fields.One2many('odoogame.planet', 'jugador', 'Planetas', delegate=True)
-
+	flotas = fields.One2many('odoogame.flota', 'jugador',  delegate=True)
+	
 	hierro_total = fields.Float(string="Hierro", compute='_recuento_recursos')
 	cobre_total = fields.Float(string="Cobre", compute='_recuento_recursos')
 	plata_total = fields.Float(string="Plata", compute='_recuento_recursos')
@@ -46,9 +45,11 @@ class player(models.Model):
 
 
 	@api.model
+	@api.model
 	def create(self, values):
 		new_player = super(player, self).create(values)
 		new_player.generate_planet()
+		new_player.incorporacion_al_servidor = datetime.now().date()
 		return new_player
 
 	def generate_planet(self):  # descubrir planeta
@@ -64,13 +65,15 @@ class player(models.Model):
 				"jugador": p.id,
 				"star": stars[0]
 			})
-			flota = planeta.flotas.create({
-				"jugador": p.id,
+			
+			flota = p.flotas.create({
+				"jugador": planeta.jugador.id,
 				'ubi_actual': planeta.id,
 			})
 
 			tipos_naves = self.env['odoogame.starship_type'].search([])
 			for n in tipos_naves:
+				print("creando nave: ", n.name)
 				nave = flota.naves.create({
 					"type": n.id,
 					"flota": flota.id
@@ -117,7 +120,7 @@ class galaxy(models.Model):
 
 	name = fields.Char(required=True, default='G001')
 	# Rel 1. Una galaxia tiene muchas estrellas
-	estrellas = fields.One2many('odoogame.star', 'galaxy', 'Estrellas')
+	estrellas = fields.One2many('odoogame.star', 'galaxy', 'Estrellas', delegate=True)
 
 
 class star(models.Model):
@@ -129,7 +132,7 @@ class star(models.Model):
 	# Rel 1. Una galaxia tiene muchas estrellas
 	galaxy = fields.Many2one('odoogame.galaxy', string='Galaxia', delegate=False, ondelete='restrict')
 	# Rel 2. Una estrella tiene muchos planetas
-	planets = fields.One2many('odoogame.planet', 'star', 'Planetas')
+	planets = fields.One2many('odoogame.planet', 'star', 'Planetas', delegate=True)
 
 
 class planet(models.Model):
@@ -147,11 +150,12 @@ class planet(models.Model):
 	galaxy = fields.Many2one('odoogame.galaxy', string='Galaxia', related='star.galaxy', store=True, readonly=True)
 
 	# Rel 4
-	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos")
-	#naves = fields.One2many('odoogame.constructed_starship', 'planeta', string="Naves estacionadas")
-	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Naves estacionadas")
-	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas")
-
+	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos", delegate=True)
+	#naves = fields.One2many('odoogame.constructed_starship', 'planeta', string="Naves estacionadas, delegate=True")
+	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Flotas en órbita", delegate=True )
+	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas", delegate=True )
+	cola_defensas = fields.One2many('odoogame.hangar_tail_defense', 'planeta', string="Defensas en construcción", delegate=True )
+	
 	hierro = fields.Float(string='Hierro')
 	cobre = fields.Float(string='Cobre')
 	plata = fields.Float(string='Plata')
@@ -159,8 +163,6 @@ class planet(models.Model):
 	deuterio = fields.Float(string='Deuterio')
 	fosiles = fields.Float(string='Comb. fósiles')
 
-	# ataques = fields.One2many('odoogame.battle', 'atacante', string='Batallas iniciadas')
-	# defensas = fields.One2many('odoogame.battle', 'atacante', string='Ataques recibidos')
 
 	def crear_edificio(self):
 		for p in self:
@@ -283,25 +285,50 @@ class constructed_building(models.Model):
 	coste_plata = fields.Float(string='Coste de Plata', compute='_calculo_por_nivel_produccion')
 	coste_oro = fields.Float(string='Coste de Oro', compute='_calculo_por_nivel_produccion')
 
-	tiempo_construccion = fields.Integer(related='type.tiempo_construccion')
-	time_update_gen = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion',
-	                                 stored='true')
-	time_update_alm = fields.Integer(string='Tiempo construcción', compute='_calculo_por_nivel_produccion',
-	                                 stored='true')
+	coste_hierro_alm = fields.Float(string='Coste de hierro', compute='_calculo_por_nivel_almacen')
+	coste_cobre_alm = fields.Float(string='Coste de Cobre', compute='_calculo_por_nivel_almacen')
+	coste_plata_alm = fields.Float(string='Coste de Plata', compute='_calculo_por_nivel_almacen')
+	coste_oro_alm = fields.Float(string='Coste de Oro', compute='_calculo_por_nivel_almacen')
 
-	tiempo_restante = fields.Integer(
-		default=0)  # variable que segun el caso, nos servirá para contar el tiempo restante
+	tiempo_construccion = fields.Integer(related='type.tiempo_construccion')
+	time_update_gen = fields.Integer(string='↑ Nivel de producción (min)', compute='_calculo_por_nivel_produccion',
+	                                 stored='true')
+	time_update_alm = fields.Integer(string='↑ Nivel de almacén (min)', compute='_calculo_por_nivel_almacen',
+	                                 stored='true')
+	tiempo_transcurrido = fields.Integer(default=0)  # variable que segun el caso, nos servirá para contar el tiempo restante
 
 	hierro_vs_max = fields.Char(string='Hierro', compute='_compute_qty_display')
 	cobre_vs_max = fields.Char(string='Cobre', compute='_compute_qty_display')
-	plata_vs_max = fields.Char(string='Palta', compute='_compute_qty_display')
+	plata_vs_max = fields.Char(string='Plata', compute='_compute_qty_display')
 	oro_vs_max = fields.Char(string='Oro', compute='_compute_qty_display')
 	deuterio_vs_max = fields.Char(string='Deuterio', compute='_compute_qty_display')
 	fosiles_vs_max = fields.Char(string='Fósiles', compute='_compute_qty_display')
 	tiempo_vs_max = fields.Char(string='Tiempo restante', compute='_compute_qty_display')
 
+
+	def _pago_recursos(self):
+		for f in self:
+			f._constrain_recursos_necesarios()
+			if f.estado == 1 or f.estado == 6:
+				f.planeta.hierro -= f.coste_hierro
+				f.planeta.cobre -= f.coste_cobre
+				f.planeta.plata -= f.coste_plata
+				f.planeta.oro -= f.coste_oro
+			elif f.estado == 7:
+				f.planeta.hierro -= f.coste_hierro_alm
+				f.planeta.cobre -= f.coste_cobre_alm
+				f.planeta.plata -= f.coste_plata_alm
+				f.planeta.oro -= f.coste_oro_alm
+
+	def create(self, values):
+		new_id = super(constructed_building, self).create(values)
+
+		self._pago_recursos
+
+		return new_id
 	@api.depends('alm_hierro', 'alm_hierro_max', 'alm_cobre', 'alm_cobre_max', 'alm_plata', 'alm_plata_max', 'alm_oro',
-	             'alm_oro_max', 'alm_deuterio', 'alm_deuterio_max', 'alm_fosiles', 'alm_fosiles_max', 'tiempo_restante')
+	             'alm_oro_max', 'alm_deuterio', 'alm_deuterio_max', 'alm_fosiles', 'alm_fosiles_max', 'tiempo_transcurrido',
+	             'time_update_alm', 'time_update_gen')
 	def _compute_qty_display(self):
 		for record in self:
 			record.hierro_vs_max = f'{record.alm_hierro}/{record.alm_hierro_max}'
@@ -311,17 +338,30 @@ class constructed_building(models.Model):
 			record.deuterio_vs_max = f'{record.alm_deuterio}/{record.alm_deuterio_max}'
 			record.fosiles_vs_max = f'{record.alm_fosiles}/{record.alm_fosiles_max}'
 
-			if record.estado == '1':
-				record.tiempo_vs_max = f'{record.tiempo_restante}/{record.tiempo_construccion} minutos'
-			if record.estado == '6':
-				record.tiempo_vs_max = f'{record.tiempo_restante}/{record.time_update_gen} minutos'
-			if record.estado == '7':
-				record.tiempo_vs_max = f'{record.tiempo_restante}/{record.time_update_alm} minutos'
+			if record.estado == '2': record.tiempo_vs_max = '0/0'
+			elif record.estado == '1':
+				record.tiempo_vs_max = f'{record.tiempo_transcurrido}/{record.tiempo_construccion} minutos'
+			elif record.estado == '6':
+				record.tiempo_vs_max = f'{record.tiempo_transcurrido}/{record.time_update_gen} minutos'
+			elif record.estado == '7':
+				record.tiempo_vs_max = f'{record.tiempo_transcurrido}/{record.time_update_alm} minutos'
 
 			print("Hierro: ", record.hierro_vs_max)
 			print("Cobre: ", record.cobre_vs_max)
 			print("Plata: ", record.plata_vs_max)
 			print("Oro: ", record.oro_vs_max)
+
+	@api.constrains('cantidad')
+	def _constrain_recursos_necesarios(self):
+		for f in self:
+			if f.coste_hierro > f.planeta.hierro:
+				raise ValidationError("No tienes suficientes recursos (hierro)")
+			if f.coste_cobre > f.planeta.cobre:
+				raise ValidationError("No tienes suficientes recursos (cobre)")
+			if f.coste_plata > f.planeta.plata:
+				raise ValidationError("No tienes suficientes recursos (plata)")
+			if f.coste_oro > f.planeta.oro:
+				raise ValidationError("No tienes suficientes recursos (oro)")
 
 	@api.depends('nivel_produccion')
 	def _calculo_por_nivel_produccion(self):
@@ -339,14 +379,22 @@ class constructed_building(models.Model):
 			e.coste_plata = e.type.coste_plata + e.type.coste_plata * math.log(e.nivel_produccion)
 			e.coste_oro = e.type.coste_oro + e.type.coste_oro * math.log(e.nivel_produccion)
 
-			e.time_update_gen = e.type.tiempo_construccion + e.type.tiempo_construccion * math.log(e.nivel_produccion)
-			e.energia_funcionamiento = e.type.energia_funcionamiento + e.type.energia_funcionamiento * math.log(
-				e.nivel_produccion)
+			e.time_update_gen = (e.type.tiempo_construccion
+			                     + e.type.tiempo_construccion
+			                     * math.log(e.nivel_produccion))
+			e.energia_funcionamiento = (e.type.energia_funcionamiento
+			                            + e.type.energia_funcionamiento
+			                            * math.log(e.nivel_produccion))
 
 
 	@api.depends('nivel_almacen')
 	def _calculo_por_nivel_almacen(self):
 		for e in self:
+			e.coste_hierro_alm = e.type.coste_hierro + e.type.coste_hierro * math.log(e.nivel_almacen)
+			e.coste_cobre_alm = e.type.coste_cobre + e.type.coste_cobre * math.log(e.nivel_almacen)
+			e.coste_plata_alm = e.type.coste_plata + e.type.coste_plata * math.log(e.nivel_almacen)
+			e.coste_oro_alm = e.type.coste_oro + e.type.coste_oro * math.log(e.nivel_almacen)
+
 			e.alm_hierro_max = (e.type.gen_hierro + e.type.gen_hierro * math.log(e.nivel_almacen)) * 1440
 			e.alm_cobre_max = (e.type.gen_cobre + e.type.gen_cobre * math.log(e.nivel_almacen)) * 1440
 			e.alm_plata_max = (e.type.gen_plata + e.type.gen_plata * math.log(e.nivel_almacen)) * 1440
@@ -356,16 +404,22 @@ class constructed_building(models.Model):
 
 			e.time_update_alm = e.type.tiempo_construccion + e.type.tiempo_construccion * math.log(e.nivel_almacen)
 
+	@api.constrains('cantidad')
 	def update_gen(self):  # Update generacion de recursos
-		for edificio in self:
-			edificio.estado = '6'
+		for f in self:
+
+			print("Boton update_gen. Estado = ", f.estado)
+			if f.estado == '2' or f.estado == '3':
+				print("Boton update_gen cambio")
+				f._pago_recursos()
+				f.estado = '6'
 
 	def update_alm(self):
-		for edificio in self:
-			edificio.estado = '7'
-
-	def recolectar_recursos(
-		self):  # Action boton: vacía los almacenes de los edificios y deposita los recursos en el almacén general
+		for f in self:
+			if f.estado == '2' or f.estado == '3' :
+				f._pago_recursos()
+				f.estado = '7'
+	def recolectar_recursos(self):  # Action boton: vacía los almacenes de los edificios y deposita los recursos en el almacén general
 
 		for edificio in self:
 			print("Recolectando recursos")
@@ -389,30 +443,30 @@ class constructed_building(models.Model):
 		print("cron_update_resources")
 		for b in self.search([]):
 			# Updates
-			if b.estado == '1':
+			if b.estado == '1': #En construccion
 
-				b.tiempo_restante += 1
+				b.tiempo_transcurrido += 1
 
-				if b.tiempo_restante == b.tiempo_construccion:
-					b.tiempo_restante = 0
+				if b.tiempo_transcurrido == b.tiempo_construccion:
+					b.tiempo_transcurrido = 0
 					b.nivel_produccion += 1
 					b.estado = '2'
 
-			elif b.estado == '6':
+			elif b.estado == '6': # ('6', '↑ Nivel de producción')
 
-				b.tiempo_restante += 1
+				b.tiempo_transcurrido += 1
 
-				if b.tiempo_restante == b.time_update_gen:
-					b.tiempo_restante = 0
+				if b.tiempo_transcurrido == b.time_update_gen:
+					b.tiempo_transcurrido = 0
 					b.nivel_produccion += 1
 					b.estado = '2'
 
 			elif b.estado == '7':
 
-				b.tiempo_restante += 1
+				b.tiempo_transcurrido += 1
 
-				if b.tiempo_restante == b.time_update_alm:
-					b.tiempo_restante = 0
+				if b.tiempo_transcurrido == b.time_update_alm:
+					b.tiempo_transcurrido = 0
 					b.nivel_produccion += 1
 					b.estado = '2'
 
@@ -467,9 +521,9 @@ class constructed_starship(models.Model):
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
 
 	# Rel 4
-	jugador = fields.Many2one('odoogame.player', 'Jugador', related='flota.jugador')
-	planeta = fields.Many2one('odoogame.planet', 'Planeta', related='flota.ubi_actual' )
-	cantidad = fields.Integer(string='Unidades', default=0)
+	jugador = fields.Many2one('odoogame.player', 'Jugador', related='flota.jugador', store=True)
+	planeta = fields.Many2one('odoogame.planet', 'Planeta', related='flota.ubi_actual', store=True)
+	cantidad = fields.Integer(string='Unidades', default=0, readonly=True)
 	flota = fields.Many2one('odoogame.flota', 'Flota', help='Este conjunto de naves forma parte de una flota')
 
 
@@ -495,13 +549,25 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 
 	fin = fields.Datetime(string="Fin de la construccion")
 	duracion = fields.Integer(string="Tiempo que tardará en completarse", compute="_compute_fechas")
-	tiempo_transcurrido = fields.Integer(string="Tiempo en construccion", default=0)
+	tiempo_transcurrido = fields.Integer(string="Tiempo transcurrido", default=0)
 
 	# Costes de construcción
 	coste_hierro = fields.Float(string='Coste de hierro', compute='_compute_costes')
 	coste_cobre = fields.Float(string='Coste de Cobre', compute='_compute_costes')
 	coste_plata = fields.Float(string='Coste de Plata', compute='_compute_costes')
 	coste_oro = fields.Float(string='Coste de Oro', compute='_compute_costes')
+
+	@api.constrains('cantidad')
+	def _constrain_recursos_necesarios(self):
+		for f in self:
+			if f.coste_hierro > f.nave.planeta.hierro:
+				raise ValidationError("No tienes suficientes recursos (hierro)")
+			if f.coste_cobre > f.nave.planeta.cobre:
+				raise ValidationError("No tienes suficientes recursos (cobre)")
+			if f.coste_plata > f.nave.planeta.plata:
+				raise ValidationError("No tienes suficientes recursos (plata)")
+			if f.coste_oro > f.nave.planeta.oro:
+				raise ValidationError("No tienes suficientes recursos (oro)")
 
 	@api.depends('nave', 'cantidad')
 	def set_name(self):
@@ -548,21 +614,23 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 
 	@api.model
 	def cron_update_starship_construction(self):
-		planetas = self.env['odoogame.planet'].search([]).ids
+		planetas = self.env['odoogame.planet'].search([])
 		print("Cron cola naus")
 		for p in planetas:
 			primer_elemento = self.env['odoogame.hangar_tail_defense'].search(
-				[('nave.flota.ubi_actual', '=', p)]
+				[('nave.planeta', '=', p.id)]
 				, limit=1
 			)
-			primer_elemento.tiempo_transcurrido += 1
-			primer_elemento.fin = fields.Datetime.to_string(
-				fields.Datetime.now() + timedelta(minutes=primer_elemento.duracion))
 
-			if primer_elemento.tiempo_transcurrido >= primer_elemento.duracion:
-				primer_elemento.nave.cantidad += primer_elemento.cantidad
-				# borrar
-				primer_elemento.unlink()
+			if primer_elemento is not None:
+				primer_elemento.tiempo_transcurrido += 1
+				primer_elemento.fin = fields.Datetime.to_string(
+					fields.Datetime.now() + timedelta(minutes=primer_elemento.duracion))
+
+				if primer_elemento.tiempo_transcurrido >= primer_elemento.duracion:
+					primer_elemento.nave.cantidad += primer_elemento.cantidad
+					# borrar
+					primer_elemento.unlink()
 
 	@api.model  # al crear una instancia del modelo se restan los recursos del planeta. No modificar una vez creada (bug)
 	def create(self, values):
@@ -574,15 +642,6 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 		new_id.nave.flota.ubi_actual.oro -= new_id.coste_oro
 
 		return new_id
-
-class flota(models.Model):
-	_name = 'odoogame.flota'
-	_description = 'Flota de un jugador en un planeta'
-
-	jugador = fields.Many2one('odoogame.player', 'Jugador')
-	ubi_actual = fields.Many2one('odoogame.planet', string='Planeta')
-	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves')
-
 
 
 # tiempo_reparacion = fields.datetime(compute=)
@@ -618,7 +677,7 @@ class constructed_defense(models.Model):
 	# Rel 4
 
 	planeta = fields.Many2one('odoogame.planet', string='Planeta')
-	cantidad = fields.Integer(string='Unidades', default=0)
+	cantidad = fields.Integer(string='Unidades', default=0, readonly=True)
 
 	vida_actual = fields.Float(string='Vida actual')
 
@@ -636,7 +695,8 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	name = fields.Char(string='Nombre', compute='set_name')
 
 	# relacion: Elemento a contruir "es de 1 tipo"...
-	defensa = fields.Many2one('odoogame.constructed_defense')
+	defensa = fields.Many2one('odoogame.constructed_defense', help='Apunta a las defensas de cierto tipo construidas en un determinado planeta')
+	planeta = fields.Many2one(related='defensa.planeta')
 	cantidad = fields.Integer(default=1)
 	max = fields.Integer(compute='_compute_costes')
 
@@ -649,6 +709,18 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	coste_cobre = fields.Float(string='Coste de Cobre', compute='_compute_costes')
 	coste_plata = fields.Float(string='Coste de Plata', compute='_compute_costes')
 	coste_oro = fields.Float(string='Coste de Oro', compute='_compute_costes')
+
+	@api.constrains('cantidad')
+	def _constrain_recursos_necesarios(self):
+		for f in self:
+			if f.coste_hierro > f.defensa.planeta.hierro:
+				raise ValidationError("No tienes suficientes recursos (hierro)")
+			if f.coste_cobre > f.defensa.planeta.cobre:
+				raise ValidationError("No tienes suficientes recursos (cobre)")
+			if f.coste_plata > f.defensa.planeta.plata:
+				raise ValidationError("No tienes suficientes recursos (plata)")
+			if f.coste_oro > f.defensa.planeta.oro:
+				raise ValidationError("No tienes suficientes recursos (oro)")
 
 	@api.depends('defensa', 'cantidad')
 	def set_name(self):
@@ -695,13 +767,10 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 
 	@api.model
 	def cron_update_defense_construction(self):
-		planetas = self.env['odoogame.planet'].search([]).ids
+		planetas = self.env['odoogame.planet'].search([])
 		print("Cron cola defenses")
 		for p in planetas:
-			primer_elemento = self.env['odoogame.hangar_tail_defense'].search(
-				[('defensa.planeta', '=', p)]
-				, limit=1
-			)
+			primer_elemento = self.env['odoogame.hangar_tail_defense'].search([('defensa.planeta', '=', p.id)], limit=1)
 			primer_elemento.tiempo_transcurrido += 1
 			primer_elemento.fin = fields.Datetime.to_string(
 				fields.Datetime.now() + timedelta(minutes=primer_elemento.duracion))
@@ -723,9 +792,25 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 		return new_id
 
 
+class flota(models.Model):
+	_name = 'odoogame.flota'
+	_description = 'Flota de un jugador en un planeta'
+	
+	name = fields.Char(compute='_set_name', readonly=True)
+	jugador = fields.Many2one('odoogame.player', 'Jugador', related='ubi_actual.jugador')
+	ubi_actual = fields.Many2one('odoogame.planet', string='Planeta', related='mision.origen')
+	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves', delegate=True)
+	mision = fields.Many2one('odoogame.mission')
+	@api.depends('jugador', 'ubi_actual')
+	def _set_name(self):
+		for f in self:
+			f.name = str(f.jugador.name) + " - " + str(f.ubi_actual.name)
+
+
 class mission(models.Model):
 	_name = 'odoogame.mission'
 	_description = 'Flota desplazándose con un objetivo o misión'
+	name = fields.Char(compute='_set_name', readonly=True)
 	origen = fields.Many2one('odoogame.planet', string='Origen')
 	destino = fields.Many2one('odoogame.planet', string='Destino')
 	ubi_actual = fields.Many2one('odoogame.planet', string='Ubicacion actual')
@@ -738,8 +823,12 @@ class mission(models.Model):
 	                           ('4', 'Atacar'), ('5', 'Colonizar'), ('6', 'Mantener posición')],
 	                          default='1', string='Misión')
 
-	flota = fields.One2many('odoogame.flota', 'id', string='Flotas atacantes')
-
+	flota = fields.One2many('odoogame.flota', 'mision', string='Flota misión', delegate=True)
+	
+	@api.depends('mision', 'flota')
+	def _set_name(self):
+		for f in self:
+			f.name = str(f.mision) + " - " + str(f.flota.name)
 	@api.depends('salida')
 	def compute_dates(self):
 		for f in self:
@@ -834,4 +923,11 @@ class planet_img(models.Model):
 """""
 ps aux | grep /usr/bin/odoo
 
+
+eval no funciona a demo.xml no s'agreguen planetes al jugador
+no es creen els tipus de naus quan es crea un planeta
+puc crear recursos encara que no tinga els recursos necessaris comprovar al Oncreate o Domain
+
+Els related de flota van molt bé quan vaig desde missió. Pero si ho cree desde flota no.
+Tampoc hi ha necessitat. Sempre q creem una flota es desde missió. També es creen desde la creacio de planeta (deurien, no ho fan)
 """""

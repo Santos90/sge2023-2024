@@ -1,9 +1,40 @@
 <odoo>
     <data noupdate="0"> <!-- Si el usuari borra les dades de demo, les inserta de nou-->
 
+
+
+        <record id="odoogame_galaxia_via_lactea"  model="odoogame.galaxy">
+            <field name="name">Vía Láctea</field>
+        </record>
+
+        <record id="odoogame_star_sol"  model="odoogame.star">
+            <field name="name">Sol</field>
+            <field name="galaxy" ref="odoogame_galaxia_via_lactea"/>
+        </record>
+
+        <record id="odoogame_planeta_mercurio"  model="odoogame.planet">
+            <field name="name">Mercurio</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
+
+        <record id="odoogame_planeta_venus"  model="odoogame.planet">
+            <field name="name">Venus</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
+
+        <record id="odoogame_planeta_tierra"  model="odoogame.planet">
+            <field name="name">Tierra</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
+
+        <record id="odoogame_planeta_marte"  model="odoogame.planet">
+            <field name="name">Marte</field>
+            <field name="star" ref="odoogame_star_sol"/>
+        </record>
+
         <record id="odoogame_player_xxjcaxx"  model="odoogame.player">
             <field name="name">xxjcaxx</field>
-            <field name="incorporacion_al_servidor" eval="(datetime.now()+timedelta(-1)).strftime('%Y-%m-%d')"/>
+            <field name="red_social">https://github.com/xxjcaxx</field>
             <field name="icon">iVBORw0KGgoAAAANSUhEUgAAAcwAAAHMCAIAAADXuQ/RAAAPa0lEQVR4nOzdb6ie913H8ZwtZ121
 zR/ao+ufnSRt1mLLSl1R2yaNjYExmMYOZgeKMEboGMEHFuYDQZI8Uib4RESUKIWh0FowyzYZ0y0u
 SZs66Niqrcmxbf65ju0M82fTxiTbkflE3PW729/V63yu677v83o9/HHf1/mdpHlzUb78fquXlpZW
@@ -75,38 +106,7 @@ rebiqLGqjpce1h+sZVqrZ/XzXvXDXq0MPhnmTRYgSGQBgkQWIEhkAYJEFiBIZAGCRBYgaBluq03c
 n2p4tpXxvMK2leJ9t/XDs8VrZUP8xzlZWt2t29R9zNabLECQyAIEiSxAkMgCBIksQJDIAgS1OOpw
 1OSKiRY6HnfpBllyWt2t2zTqAMb60S5vsgBBIgsQJLIAQSILECSyAEEiCxD0PwEAAP//Q+JfzsqL
 Kr8AAAAASUVORK5CYII=</field>
-
         </record>
-
-        <record id="odoogame_galaxia_via_lactea"  model="odoogame.galaxy">
-            <field name="name">Vía Láctea</field>
-        </record>
-
-        <record id="odoogame_star_sol"  model="odoogame.star">
-            <field name="name">Sol</field>
-            <field name="galaxy" ref="odoogame_galaxia_via_lactea"/>
-        </record>
-
-        <record id="odoogame_planeta_mercurio"  model="odoogame.planet">
-            <field name="name">Mercurio</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
-        <record id="odoogame_planeta_venus"  model="odoogame.planet">
-            <field name="name">Venus</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
-        <record id="odoogame_planeta_tierra"  model="odoogame.planet">
-            <field name="name">Tierra</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
-        <record id="odoogame_planeta_marte"  model="odoogame.planet">
-            <field name="name">Marte</field>
-            <field name="star" ref="odoogame_star_sol"/>
-        </record>
-
 
     </data>
 </odoo>

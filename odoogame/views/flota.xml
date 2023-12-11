@@ -1,0 +1,72 @@
+<odoo>
+	<data>
+
+		<record model="ir.ui.view" id="odoogame.flota_list">
+			<field name="name">aaaa</field>
+
+			<field name="model">odoogame.flota</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="name"/>
+					<field name="jugador"/>
+					<field name="ubi_actual"/>
+					<field name="naves"/>
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="odoogame.flota_form">
+			<field name="name">aaaa</field>
+
+			<field name="model">odoogame.flota</field>
+			<field name="arch" type="xml">
+				<form string="Course Form">
+					<sheet>
+						<group>
+							<field name="name"/>
+						</group>
+						<group string="Información básica">
+							<group>
+								<field name="jugador"/>
+							</group>
+							<group>
+								<field name="ubi_actual"/>
+							</group>
+						</group>
+						<notebook>
+							<page string="Naves">
+								<field name="naves"/>
+							</page>
+						</notebook>
+
+
+					</sheet>
+				</form>
+
+
+			</field>
+		</record>
+
+
+		<record model="ir.ui.view" id="odoogame.flota_search">
+			<field name="name">Filtos predefinidos: Modelo Flota</field>
+			<field name="model">odoogame.flota</field>
+			<field name="arch" type="xml">
+				<search>
+					<group string="Group By">
+						<filter name="group_by_player" string="Jugador" context="{'group_by': 'jugador'}"/>
+					</group>
+
+
+
+				</search>
+			</field>
+		</record>
+
+
+
+
+
+
+	</data>
+</odoo>

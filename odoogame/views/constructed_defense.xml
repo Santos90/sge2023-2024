@@ -6,8 +6,10 @@
 			<field name="arch" type="xml">
 				<tree>
 
+					<field name="name"/>
 					<field name="type"/>
 					<field name="planeta"/>
+					<field name="jugador"/>
 					<field name="cantidad"/>
 
 
@@ -50,9 +52,11 @@
 			<field name="model">odoogame.constructed_defense</field>
 			<field name="arch" type="xml">
 				<search>
+					<!--
 					<group string="Group By">
 						<filter name="group_by_player" string="Jugador" context="{'group_by': 'jugador'}"/>
 					</group>
+					-->
 					<group string="Group By">
 						<filter name="group_by_planet" string="Planeta" context="{'group_by': 'planeta'}"/>
 					</group>

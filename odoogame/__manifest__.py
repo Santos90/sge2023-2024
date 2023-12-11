@@ -39,6 +39,8 @@
         'views/views.xml',
         'views/templates.xml',
         'views/hangar_tail_defense.xml',
+        'views/hangar_tail_starship.xml',
+        'views/flota.xml',
 
         'data/data_building_type.xml',
         'data/data_starship_type.xml',

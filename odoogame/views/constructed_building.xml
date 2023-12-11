@@ -13,6 +13,7 @@
 					<field name="vida_actual"/>
 					<field name="nivel_produccion"/>
 					<field name="nivel_almacen"/>
+					<field name="tiempo_vs_max"/>
 					<!--
 											<field name="alm_hierro_max"/>
 											<field name="alm_cobre_max"/>
@@ -23,15 +24,15 @@
 									-->
 
 
-					<field name="alm_hierro"/>
-					<field name="alm_cobre"/>
-					<field name="alm_plata"/>
+					<field name="hierro_vs_max"/>
+					<field name="cobre_vs_max"/>
+					<field name="plata_vs_max"/>
 
 
 
-					<field name="alm_oro"/>
-					<field name="alm_deuterio"/>
-					<field name="alm_fosiles"/>
+					<field name="oro_vs_max"/>
+					<field name="deuterio_vs_max"/>
+					<field name="fosiles_vs_max"/>
 
 					<button name="recolectar_recursos" type="object" string="Recursos" class="oe_highlight" icon="fa-level-up"/>
 					<button name="update_gen" type="object" string="↑ Gen Level" class="oe_highlight" icon="fa-level-up"/>
@@ -59,7 +60,7 @@
 							<group>
 								<field name="icon" widget="image" class="oe_avatar"/>
 
-								<field name="tiempo_restante"/>
+								<field name="tiempo_vs_max"/>
 
 							</group>
 						</group>
