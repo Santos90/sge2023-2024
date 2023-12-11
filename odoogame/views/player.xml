@@ -48,7 +48,11 @@
                         <notebook>
                             <page string="Planetas">
                                 <field name="planetas"/>
-<button name="generate_planet" type="object" string="Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
+<button name="generate_planet" type="object" string="  Descubrir planeta" class="oe_highlight" icon="fa-rocket"/>
+                            </page>
+
+                            <page string="Misiones">
+                                <field name="misiones"/>
                             </page>
 
 

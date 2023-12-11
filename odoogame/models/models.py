@@ -35,7 +35,8 @@ class player(models.Model):
 	# Rel 3. Un jugador ocupa palnetas
 	planetas = fields.One2many('odoogame.planet', 'jugador', 'Planetas', delegate=True)
 	flotas = fields.One2many('odoogame.flota', 'jugador',  delegate=True)
-	
+	misiones = fields.One2many('odoogame.mision', 'jugador',  delegate=True)
+
 	hierro_total = fields.Float(string="Hierro", compute='_recuento_recursos')
 	cobre_total = fields.Float(string="Cobre", compute='_recuento_recursos')
 	plata_total = fields.Float(string="Plata", compute='_recuento_recursos')
@@ -44,7 +45,6 @@ class player(models.Model):
 	fosiles_total = fields.Float(string="Comb. Fósiles", compute='_recuento_recursos')
 
 
-	@api.model
 	@api.model
 	def create(self, values):
 		new_player = super(player, self).create(values)
@@ -66,9 +66,9 @@ class player(models.Model):
 				"star": stars[0]
 			})
 			
-			flota = p.flotas.create({
+			flota = self.env['odoogame.flota'].create({
 				"jugador": planeta.jugador.id,
-				'ubi_actual': planeta.id,
+				'ubi_actual': planeta.id
 			})
 
 			tipos_naves = self.env['odoogame.starship_type'].search([])
@@ -151,8 +151,9 @@ class planet(models.Model):
 
 	# Rel 4
 	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos", delegate=True)
-	#naves = fields.One2many('odoogame.constructed_starship', 'planeta', string="Naves estacionadas, delegate=True")
 	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Flotas en órbita", delegate=True )
+	naves = fields.Many2many('odoogame.constructed_starship', compute='_get_naves_planeta')
+
 	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas", delegate=True )
 	cola_defensas = fields.One2many('odoogame.hangar_tail_defense', 'planeta', string="Defensas en construcción", delegate=True )
 	
@@ -163,6 +164,10 @@ class planet(models.Model):
 	deuterio = fields.Float(string='Deuterio')
 	fosiles = fields.Float(string='Comb. fósiles')
 
+	def _get_naves_planeta(self):
+		for planet in self:
+			self.naves = self.env['odoogame.constructed_starship']\
+				.search([('flota.ubi_actual.id', '=', planet.id)])
 
 	def crear_edificio(self):
 		for p in self:
@@ -797,8 +802,8 @@ class flota(models.Model):
 	_description = 'Flota de un jugador en un planeta'
 	
 	name = fields.Char(compute='_set_name', readonly=True)
-	jugador = fields.Many2one('odoogame.player', 'Jugador', related='ubi_actual.jugador')
-	ubi_actual = fields.Many2one('odoogame.planet', string='Planeta', related='mision.origen')
+	jugador = fields.Many2one('odoogame.player', 'Jugador')
+	ubi_actual = fields.Many2one('odoogame.planet', string='Planeta')
 	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves', delegate=True)
 	mision = fields.Many2one('odoogame.mission')
 	@api.depends('jugador', 'ubi_actual')
@@ -811,24 +816,27 @@ class mission(models.Model):
 	_name = 'odoogame.mission'
 	_description = 'Flota desplazándose con un objetivo o misión'
 	name = fields.Char(compute='_set_name', readonly=True)
+	jugador = fields.Many2one('odoogame.player')
+
 	origen = fields.Many2one('odoogame.planet', string='Origen')
 	destino = fields.Many2one('odoogame.planet', string='Destino')
 	ubi_actual = fields.Many2one('odoogame.planet', string='Ubicacion actual')
+
 
 	salida = fields.Datetime(string='Inicio', default=lambda self: fields.Datetime.now())
 	llegada = fields.Datetime(string='Llegada', compute='compute_dates')
 	retorno = fields.Datetime(string='Retorno', compute='compute_dates')
 
-	mision = fields.Selection([('1', 'Transporte'), ('2', 'Despliegue'), ('3', 'Espiar'),
+	type = fields.Selection([('1', 'Transporte'), ('2', 'Despliegue'), ('3', 'Espiar'),
 	                           ('4', 'Atacar'), ('5', 'Colonizar'), ('6', 'Mantener posición')],
 	                          default='1', string='Misión')
 
 	flota = fields.One2many('odoogame.flota', 'mision', string='Flota misión', delegate=True)
 	
-	@api.depends('mision', 'flota')
+	@api.depends('type', 'origen', 'destino')
 	def _set_name(self):
 		for f in self:
-			f.name = str(f.mision) + " - " + str(f.flota.name)
+			f.name = str(f.type) + " - " + str(f.origen) + " - " + str(f.destino)
 	@api.depends('salida')
 	def compute_dates(self):
 		for f in self:
@@ -923,11 +931,9 @@ class planet_img(models.Model):
 """""
 ps aux | grep /usr/bin/odoo
 
+many2 many computed. Traure les naus construides que están en un planeta
 
-eval no funciona a demo.xml no s'agreguen planetes al jugador
-no es creen els tipus de naus quan es crea un planeta
-puc crear recursos encara que no tinga els recursos necessaris comprovar al Oncreate o Domain
+puc crear recursos encara que no tinga els recursos necessaris. comprovar al Oncreate o Domain
 
-Els related de flota van molt bé quan vaig desde missió. Pero si ho cree desde flota no.
-Tampoc hi ha necessitat. Sempre q creem una flota es desde missió. També es creen desde la creacio de planeta (deurien, no ho fan)
+
 """""
