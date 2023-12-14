@@ -10,7 +10,7 @@
                 <calendar string="Session Calendar"
                           date_start="salida"
                           date_delay="llegada"
-                          color="mision">
+                          color="type">
                     <field name="origen"/>
                     <field name="destino"/>
                 </calendar>
@@ -28,7 +28,7 @@
                     <field name="salida"/>
                     <field name="llegada"/>
                     <field name="retorno"/>
-                    <field name="mision"/>
+                    <field name="type"/>
 
                 </tree>
             </field>
@@ -45,7 +45,7 @@
                             <group>
                                 <field name="origen"/>
                                 <field name="destino"/>
-                                <field name="mision"/>
+                                <field name="type"/>
 
                             </group>
                             <group>
