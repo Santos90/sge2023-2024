@@ -255,7 +255,7 @@ class constructed_building(models.Model):
 	tipo_energia = fields.Selection(related='type.tipo_energia')
 
 	# Rel 4
-	planeta = fields.Many2one('odoogame.planet', 'Planeta')
+	planeta = fields.Many2one('odoogame.planet',  ondelete='cascade')
 
 	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'),
 	                           ('4', 'En reparación'), ('5', 'Destruido'),
@@ -690,7 +690,7 @@ class constructed_defense(models.Model):
 	jugador = fields.Many2one(related="planeta.jugador", string="jugador")
 	# Rel 4
 
-	planeta = fields.Many2one('odoogame.planet', string='Planeta')
+	planeta = fields.Many2one('odoogame.planet', string='Planeta', ondelete='cascade')
 	cantidad = fields.Integer(string='Unidades', default=0, readonly=True)
 
 	vida_actual = fields.Float(string='Vida actual')
@@ -856,7 +856,7 @@ class mission(models.Model):
 	@api.model
 	def cron_update_mission(self):
 		for mision in self.search([]):
-			if fields.Datetime.now() > mision.end:
+			if fields.Datetime.now() > mision.llegada:
 				mision.ubi_actual = mision.destino
 				
 				defensas_defensor = self.env['odoogame.constructed_defenses'].search([('planeta', '=', mision.destino)])
