@@ -17,7 +17,7 @@ class server(models.Model):
 
 	name = fields.Char(required=True)
 	# Rel 0. Un servidor tiene muchos jugadores
-	players = fields.One2many('odoogame.player', 'server', "Jugadores", delegate=True, ondelete='restrict')
+	players = fields.One2many('odoogame.player', 'server', "Jugadores", ondelete='restrict')
 
 
 class player(models.Model):
@@ -38,9 +38,9 @@ class player(models.Model):
 								column1 = 'friend1',  # (opcional) el nom en la taula en mig de la columna d'aquest model
 								column2 = 'friend2')  # (opcional) el nom de la columna de l'altre model.
 	
-	planetas = fields.One2many('odoogame.planet', 'jugador', 'Planetas', delegate=True)
-	flotas = fields.One2many('odoogame.flota', 'jugador',  delegate=True)
-	misiones = fields.One2many('odoogame.mission', 'jugador',  delegate=True)
+	planetas = fields.One2many('odoogame.planet', 'jugador', 'Planetas')
+	flotas = fields.One2many('odoogame.flota', 'jugador')
+	misiones = fields.One2many('odoogame.mission', 'jugador')
 
 	hierro_total = fields.Float(string="Hierro", compute='_recuento_recursos')
 	cobre_total = fields.Float(string="Cobre", compute='_recuento_recursos')
@@ -57,7 +57,11 @@ class player(models.Model):
 	@api.model
 	def create(self, values):
 		new_player = super(player, self).create(values)
-		new_player.generate_planet()
+		planeta = new_player.generate_planet()
+		planeta.hierro = 100000
+		planeta.cobre = 50000
+		planeta.plata = 30000
+		planeta.oro = 5000
 		new_player.incorporacion_al_servidor = datetime.now().date()
 		return new_player
 
@@ -69,7 +73,7 @@ class player(models.Model):
 			random.shuffle(stars)
 
 			planeta = p.planetas.create({
-				"name": "Colonia " + str( self.env['odoogame.planet'].search_count([('jugador', '=', p.id)]) +1 ) + str(p.name),
+				"name": "Colonia " + str( self.env['odoogame.planet'].search_count([('jugador', '=', p.id)]) +1 ) + " " +str(p.name),
 				"icon": self.env['odoogame.planet_img'].browse(planet_img[0]).image,
 				"jugador": p.id,
 				"star": stars[0]
@@ -94,6 +98,7 @@ class player(models.Model):
 					"type": d.id,
 					"planeta": planeta.id,
 				})
+			return planeta
 
 	@api.depends('planetas')  # El decorador @api.depends() indica que es cridarà a la funció
 	# sempre que es modifiquen els camps seats i attendee_ids.
@@ -129,7 +134,7 @@ class galaxy(models.Model):
 
 	name = fields.Char(required=True, default='G001')
 	# Rel 1. Una galaxia tiene muchas estrellas
-	estrellas = fields.One2many('odoogame.star', 'galaxy', 'Estrellas', delegate=True)
+	estrellas = fields.One2many('odoogame.star', 'galaxy', 'Estrellas')
 
 
 class star(models.Model):
@@ -141,7 +146,7 @@ class star(models.Model):
 	# Rel 1. Una galaxia tiene muchas estrellas
 	galaxy = fields.Many2one('odoogame.galaxy', string='Galaxia', delegate=False, ondelete='restrict')
 	# Rel 2. Una estrella tiene muchos planetas
-	planets = fields.One2many('odoogame.planet', 'star', 'Planetas', delegate=True)
+	planets = fields.One2many('odoogame.planet', 'star', 'Planetas')
 
 
 class planet(models.Model):
@@ -154,17 +159,17 @@ class planet(models.Model):
 	# Rel 2. Una estrella tiene muchos planetas
 	star = fields.Many2one('odoogame.star', string='Estrella', delegate=False)
 	# Rel 3. Un jugador ocupa palnetas
-	jugador = fields.Many2one('odoogame.player', string='Propietario', delegate=False)
+	jugador = fields.Many2one('odoogame.player', string='Propietario', delegate=False, ondelete='cascade')
 	# Related. En quina galaxia está el planeta
 	galaxy = fields.Many2one('odoogame.galaxy', string='Galaxia', related='star.galaxy', store=True, readonly=True)
 
 	# Rel 4
-	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos", delegate=True, ondelete='cascade')
-	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Flotas en órbita", delegate=True , ondelete='cascade' )
+	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos", ondelete='cascade')
+	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Flotas en órbita" , ondelete='cascade' )
 	naves = fields.Many2many('odoogame.constructed_starship', compute='_get_naves_planeta')
 
-	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas", delegate=True, ondelete='cascade' )
-	cola_defensas = fields.One2many('odoogame.hangar_tail_defense', 'planeta', string="Defensas en construcción", delegate=True, ondelete='cascade' )
+	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas", ondelete='cascade' )
+	cola_defensas = fields.One2many('odoogame.hangar_tail_defense', 'planeta', string="Defensas en construcción", ondelete='cascade' )
 	
 	hierro = fields.Float(string='Hierro')
 	cobre = fields.Float(string='Cobre')
@@ -227,7 +232,7 @@ class building_type(models.Model):
 	gen_oro = fields.Float(string='Producción de Oro')
 	gen_deuterio = fields.Float(string='Producción de Deuterio')
 	gen_fosiles = fields.Float(string='Producción de Comb. fósiles')
-	gen_energia = fields.Float(strings='Produccion de W/s')
+	gen_energia = fields.Float(string='Produccion de W/s')
 
 	vida_inicial = fields.Float(string='Vida inicial edificio',
 	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar')
@@ -247,7 +252,7 @@ class constructed_building(models.Model):
 	_description = 'Edificios que estarán por defecto en el juego. El jugador elegirá qué tipo de edificio crear'
 
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
-	type = fields.Many2one('odoogame.building_type', string="Tipo de edificio")
+	type = fields.Many2one('odoogame.building_type', string="Tipo de edificio", required=True)
 
 	vida_inicial = fields.Float(string='Vida inicial edificio',
 	                            help='Va perdiendo vida por desgaste o por ataques. Se puede reparar',
@@ -255,11 +260,11 @@ class constructed_building(models.Model):
 	tipo_energia = fields.Selection(related='type.tipo_energia')
 
 	# Rel 4
-	planeta = fields.Many2one('odoogame.planet',  ondelete='cascade')
+	planeta = fields.Many2one('odoogame.planet',  ondelete='cascade', required=True)
 
 	estado = fields.Selection([('1', 'En construcción'), ('2', 'Activo'), ('3', 'Inactivo'),
 	                           ('4', 'En reparación'), ('5', 'Destruido'),
-	                           ('6', 'Nivel de producción'), ('7', 'Nivel de almacén')])
+	                           ('6', 'Nivel de producción'), ('7', 'Nivel de almacén')], default = "1")
 	vida_actual = fields.Float(string='Vida actual')
 
 	nivel_produccion = fields.Integer(default=1)
@@ -305,10 +310,8 @@ class constructed_building(models.Model):
 	coste_oro_alm = fields.Float(string='Coste de Oro', compute='_calculo_por_nivel_almacen')
 
 	tiempo_construccion = fields.Integer(related='type.tiempo_construccion')
-	time_update_gen = fields.Integer(string='↑ Nivel de producción (min)', compute='_calculo_por_nivel_produccion',
-	                                 stored='true')
-	time_update_alm = fields.Integer(string='↑ Nivel de almacén (min)', compute='_calculo_por_nivel_almacen',
-	                                 stored='true')
+	time_update_gen = fields.Integer(string='↑ Nivel de producción (min)', compute='_calculo_por_nivel_produccion')
+	time_update_alm = fields.Integer(string='↑ Nivel de almacén (min)', compute='_calculo_por_nivel_almacen')
 	tiempo_transcurrido = fields.Integer(default=0, readonly=True)  # variable que segun el caso, nos servirá para contar el tiempo restante
 
 	hierro_vs_max = fields.Char(string='Hierro', compute='_compute_qty_display')
@@ -535,9 +538,9 @@ class constructed_starship(models.Model):
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
 
 	# Rel 4
-	jugador = fields.Many2one('odoogame.player', 'Jugador', related='flota.jugador', store=True)
-	planeta = fields.Many2one('odoogame.planet', 'Planeta', related='flota.ubi_actual', store=True)
-	cantidad = fields.Integer(string='Unidades', default=0, readonly=True)
+	jugador = fields.Many2one(related='flota.jugador', store=True)
+	planeta = fields.Many2one(related='flota.ubi_actual', store=True)
+	cantidad = fields.Integer(string='Unidades', default=0)#, readonly=True)
 	flota = fields.Many2one('odoogame.flota', 'Flota', help='Este conjunto de naves forma parte de una flota')
 
 
@@ -549,7 +552,7 @@ class constructed_starship(models.Model):
 	@api.depends('type', 'cantidad', 'flota')
 	def set_name(self):
 		for f in self:
-			f.name = str(f.type.name) + " - " + str(f.cantidad) + " - " + str(f.flota.name)
+			f.name = str(f.type.name) + " - " + str(f.cantidad) + " - Flota: " + str(f.flota.name)
 
 class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a contruir
 	_name = 'odoogame.hangar_tail_starship'
@@ -557,13 +560,16 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 	name = fields.Char(string='Nombre', compute='set_name')
 
 	# relacion: Elemento a contruir "es de 1 tipo"...
-	nave = fields.Many2one('odoogame.constructed_starship')
-	cantidad = fields.Integer(default=0)
+	nave = fields.Many2one('odoogame.constructed_starship', required=True)
+	cantidad = fields.Integer(default=1, domain="[('cantidad', '&gt;', 0), ('cantidad', '&lt;=', 'max')]")
 	max = fields.Integer(compute='_compute_costes')
+	
+	jugador = fields.Many2one(related='nave.flota.jugador', store=True)
+	planeta = fields.Many2one(related='nave.flota.ubi_actual', store=True)
 
 	fin = fields.Datetime(string="Fin de la construccion")
 	duracion = fields.Integer(string="Tiempo que tardará en completarse", compute="_compute_fechas")
-	tiempo_transcurrido = fields.Integer(string="Tiempo transcurrido", default=0, reaonly= True)
+	tiempo_transcurrido = fields.Integer(string="Tiempo transcurrido", default=0, readonly= True)
 
 	# Costes de construcción
 	coste_hierro = fields.Float(string='Coste de hierro', compute='_compute_costes')
@@ -572,9 +578,16 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 	coste_oro = fields.Float(string='Coste de Oro', compute='_compute_costes')
 
 	@api.constrains('cantidad')
+	def _constrains_max(self):
+		for f in self:
+			if f.cantidad <= 0:
+				raise ValidationError("La cantidad a construir ha de ser mayor que 0")
+			if f.cantidad > f.max:
+				raise ValidationError("Te faltan recursos.\nExcedes la cantidad máxima de unidades que puedes construir")
+			
 	def _constrain_recursos_necesarios(self):
 		for f in self:
-			if f.coste_hierro > f.nave.planeta.hierro:
+			if f.coste_hierro > f.nave.flota.ubi_actual.hierro:
 				raise ValidationError("No tienes suficientes recursos (hierro)")
 			if f.coste_cobre > f.nave.planeta.cobre:
 				raise ValidationError("No tienes suficientes recursos (cobre)")
@@ -602,37 +615,37 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 			f.coste_plata = f.cantidad * f.nave.type.coste_plata
 			f.coste_oro = f.cantidad * f.nave.type.coste_oro
 
-			min = sys.maxsize  # calculamos el máximo de naves de un tipo q se pueden construir según el recurso 'limitante' del planeta
+			max = sys.maxsize  # calculamos el máximo de naves de un tipo q se pueden construir según el recurso 'limitante' del planeta
+			print(f.nave.flota.ubi_actual.name)
 			if f.nave.type.coste_hierro > 0:
 				cant = f.nave.flota.ubi_actual.hierro / f.nave.type.coste_hierro
-
-				if cant < min:
-					min = cant
+				if cant < max:
+					max = cant
+					
 			if f.nave.type.coste_cobre > 0:
 				cant = f.nave.flota.ubi_actual.cobre / f.nave.type.coste_cobre
-
-				if cant < min:
-					min = cant
+				if cant < max:
+					max = cant
+					
 			if f.nave.type.coste_plata > 0:
 				cant = f.nave.flota.ubi_actual.plata / f.nave.type.coste_plata
-
-				if cant < min:
-					min = cant
+				if cant < max:
+					max = cant
+					
 			if f.nave.type.coste_oro > 0:
 				cant = f.nave.flota.ubi_actual.oro / f.nave.type.coste_oro
+				if cant < max:
+					max = cant
 
-				if cant < min:
-					min = cant
-
-			f.max = min
+			f.max = max
 
 	@api.model
 	def cron_update_starship_construction(self):
 		planetas = self.env['odoogame.planet'].search([])
 		print("Cron cola naus")
 		for p in planetas:
-			primer_elemento = self.env['odoogame.hangar_tail_defense'].search(
-				[('nave.planeta', '=', p.id)]
+			primer_elemento = self.env['odoogame.hangar_tail_starship'].search(
+				[('nave.flota.ubi_actual', '=', p.id)]
 				, limit=1
 			)
 
@@ -648,8 +661,8 @@ class hangar_tail_starship(models.Model):  # Nombre para relaciones: Elemento a 
 
 	@api.model  # al crear una instancia del modelo se restan los recursos del planeta. No modificar una vez creada (bug)
 	def create(self, values):
+		self._constrain_recursos_necesarios
 		new_id = super(hangar_tail_starship, self).create(values)
-
 		new_id.nave.flota.ubi_actual.hierro -= new_id.coste_hierro
 		new_id.nave.flota.ubi_actual.cobre -= new_id.coste_cobre
 		new_id.nave.flota.ubi_actual.plata -= new_id.coste_plata
@@ -689,9 +702,9 @@ class constructed_defense(models.Model):
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
 	jugador = fields.Many2one(related="planeta.jugador", string="jugador")
 	# Rel 4
-
+	defensas_en_construccion = fields.One2many('odoogame.hangar_tail_defense', 'defensa')
 	planeta = fields.Many2one('odoogame.planet', string='Planeta', ondelete='cascade')
-	cantidad = fields.Integer(string='Unidades', default=0, readonly=True)
+	cantidad = fields.Integer(string='Unidades', default=0)#, readonly=True)
 
 	vida_actual = fields.Float(string='Vida actual')
 
@@ -709,14 +722,14 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	name = fields.Char(string='Nombre', compute='set_name')
 
 	# relacion: Elemento a contruir "es de 1 tipo"...
-	defensa = fields.Many2one('odoogame.constructed_defense', help='Apunta a las defensas de cierto tipo construidas en un determinado planeta')
+	defensa = fields.Many2one('odoogame.constructed_defense', ondelete='cascade', help='Apunta a las defensas de cierto tipo construidas en un determinado planeta')
 	planeta = fields.Many2one(related='defensa.planeta')
 	cantidad = fields.Integer(default=1)
 	max = fields.Integer(compute='_compute_costes')
 
 	fin = fields.Datetime(string="Fin de la construccion")
 	duracion = fields.Integer(string="Tiempo que tardará en completarse", compute="_compute_fechas")
-	tiempo_transcurrido = fields.Integer(string="Tiempo en construccion", default=0, reaonly= True)
+	tiempo_transcurrido = fields.Integer(string="Tiempo en construccion", default=0, readonly= True)
 
 	# Costes de construcción
 	coste_hierro = fields.Float(string='Coste de hierro', compute='_compute_costes')
@@ -784,7 +797,9 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 		planetas = self.env['odoogame.planet'].search([])
 		print("Cron cola defenses")
 		for p in planetas:
-			primer_elemento = self.env['odoogame.hangar_tail_defense'].search([('defensa.planeta', '=', p.id)], limit=1)
+			primer_elemento = self.env['odoogame.hangar_tail_defense'].search(
+				[('defensa.planeta', '=', p.id)]
+				, limit=1)
 			primer_elemento.tiempo_transcurrido += 1
 			primer_elemento.fin = fields.Datetime.to_string(
 				fields.Datetime.now() + timedelta(minutes=primer_elemento.duracion))
@@ -812,24 +827,33 @@ class flota(models.Model):
 	
 	name = fields.Char(compute='_set_name', readonly=True)
 	jugador = fields.Many2one('odoogame.player', 'Jugador')
-	ubi_actual = fields.Many2one('odoogame.planet', string='Planeta')
-	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves', delegate=True)
+	ubi_actual = fields.Many2one('odoogame.planet', string='Ubicación')
+	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves')
 	mision = fields.Many2one('odoogame.mission')
 	@api.depends('jugador', 'ubi_actual')
 	def _set_name(self):
 		for f in self:
 			f.name = str(f.jugador.name) + " - " + str(f.ubi_actual.name)
+	
 
-
+class form_subflota(models.Model):
+	_name = 'odoogame.form_subflota'
+	_description = 'Form para mision'
+	
+	cant = fields.Integer(readonly=False)
+	disp = fields.Integer()
+	type = fields.Many2one('odoogame.starship_type')
+	mision = fields.Many2one('odoogame.mission')
+	
 class mission(models.Model):
 	_name = 'odoogame.mission'
 	_description = 'Flota desplazándose con un objetivo o misión'
-	name = fields.Char(compute='_set_name', readonly=True)
-	jugador = fields.Many2one('odoogame.player', 'Jugador')
 	
-	origen = fields.Many2one('odoogame.planet', string='Origen')
+	name = fields.Char(compute='_set_name', readonly=True)
+	jugador = fields.Many2one('odoogame.player', 'Jugador', default=lambda self: self._get_default())
+	
+	origen = fields.Many2one('odoogame.planet', string='Origen', domain="[('jugador', '=', jugador)]", default=lambda self: self._get_default())
 	destino = fields.Many2one('odoogame.planet', string='Destino')
-	ubi_actual = fields.Many2one('odoogame.planet', string='Ubicacion actual')
 
 	salida = fields.Datetime(string='Inicio', default=lambda self: fields.Datetime.now())
 	llegada = fields.Datetime(string='Llegada', compute='compute_dates')
@@ -838,9 +862,73 @@ class mission(models.Model):
 	type = fields.Selection([('1', 'Transporte'), ('2', 'Despliegue'), ('3', 'Espiar'),
 	                           ('4', 'Atacar'), ('5', 'Colonizar'), ('6', 'Mantener posición')],
 	                          default='1', string='Misión')
-
-	flota = fields.One2many('odoogame.flota', 'mision', string='Flota misión', delegate=True)
+	flota = fields.One2many('odoogame.flota', 'mision', string='Flota misión'
+							,domain="[('jugador', '=', jugador)]")
+	subflota = fields.Many2many('odoogame.form_subflota', computed="form_flota",)#default=lambda self: self._get_default())
 	
+	@api.model  # al crear una instancia del modelo se restan los recursos del planeta. No modificar una vez creada (bug)
+	def create(self, values):
+		new_id = super(mission, self).create(values)
+		
+		new_id.flota = self.env['odoogame.flota'].create({
+			"jugador": new_id.jugador.id,
+			"mision": new_id.id,
+		})
+		
+		for f in new_id.subflota:
+			self.env['odoogame.constructed_starship'].create({
+				"type": f.type.id,
+				"cantidad": f.cant,
+				"flota": new_id.flota,
+			})
+		
+		return new_id
+	@api.model
+	def _get_default(self):
+		jugador =  self.env['odoogame.player'].search([], limit=1)
+		origen = self.env['odoogame.planet'].search([('jugador', '=', jugador.id)], limit=1)
+		
+		for f in self:
+			for x in self.env['odoogame.form_subflota'].search([]):
+				x.unlink()
+			naves_disp = self.env['odoogame.constructed_starship'].search([
+				('flota.ubi_actual', '=', f.origen.id),
+				('flota.jugador', '=', f.jugador.id),
+				('cantidad', '>', 0)
+			])
+			for n in naves_disp:
+				print(n.name)
+				self.env['odoogame.form_subflota'].create({
+					"type": n.type.id,
+					"cant": 0,
+					"disp": n.cantidad,
+					"mision": f.id
+				})
+		subflota = self.env['odoogame.form_subflota'].search([])
+		
+		
+		
+			
+	@api.depends('origen')
+	def form_flota(self):
+		for f in self:
+			for x in self.env['odoogame.form_subflota'].search([]):
+				x.unlink()
+			naves_disp = self.env['odoogame.constructed_starship'].search([
+				('flota.ubi_actual', '=', f.origen.id),
+				('flota.jugador', '=', f.jugador.id),
+				('cantidad', '>', 0)
+			])
+			for n in naves_disp:
+				print(n.name)
+				self.env['odoogame.form_subflota'].create({
+					"type": n.type.id,
+					"cant": 0,
+					"disp": n.cantidad,
+					"mision": f.id
+				})
+			f.subflota = self.env['odoogame.form_subflota'].search([])
+				
 	@api.depends('type', 'origen', 'destino')
 	def _set_name(self):
 		for f in self:
@@ -857,7 +945,7 @@ class mission(models.Model):
 	def cron_update_mission(self):
 		for mision in self.search([]):
 			if fields.Datetime.now() > mision.llegada:
-				mision.ubi_actual = mision.destino
+				
 				
 				defensas_defensor = self.env['odoogame.constructed_defenses'].search([('planeta', '=', mision.destino)])
 				naves_defensor = self.env['odoogame.flota'].search([('ubi_actual', '=', mision.destino)])

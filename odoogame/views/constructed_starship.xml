@@ -8,6 +8,7 @@
 			<field name="arch" type="xml">
 				<tree>
 
+					<field name="name"/>
 					<field name="type"/>
 
 					<field name="flota"/>
@@ -31,6 +32,7 @@
 					<sheet>
 						<group string="Información básica">
 							<group>
+								<field name="name"/>
 								<field name="type"/>
 
 								<field name="flota"/>
@@ -40,7 +42,8 @@
 								<field name="icon" widget="image" class="oe_avatar"/>
 
 
-
+<field name="jugador"/>
+<field name="planeta"/>
 
 							</group>
 						</group>
@@ -99,6 +102,7 @@
 					<group string="Group By">
 						<filter name="group_by_flota" string="Flota" context="{'group_by': 'flota'}"/>
 					</group>
+
 
 					<field name="type"/>
 					<field name="flota"/>

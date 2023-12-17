@@ -11,6 +11,7 @@
                           date_start="salida"
                           date_delay="llegada"
                           color="type">
+                    <field name="jugador"/>
                     <field name="origen"/>
                     <field name="destino"/>
                 </calendar>
@@ -23,6 +24,7 @@
             <field name="model">odoogame.mission</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="jugador"/>
                     <field name="origen"/>
                     <field name="destino"/>
                     <field name="salida"/>
@@ -43,6 +45,7 @@
                     <sheet>
                         <group string="Información básica">
                             <group>
+                                <field name="jugador"/>
                                 <field name="origen"/>
                                 <field name="destino"/>
                                 <field name="type"/>
@@ -57,9 +60,18 @@
 
                         </group>
 
+                        <field name="subflota" >
+                            <tree editable="top">
+                                <field name="type"/>
+                                <field name="cant"/>
+                                <field name="disp"/>
+
+                            </tree>
+
+                        </field>
 
                         <notebook>
-                            <page string="FLota de ataque">
+                            <page string="Flotas de ataque">
                                 <field name="flota"/>
                             </page>
 

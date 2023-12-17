@@ -7,12 +7,10 @@
 				<tree>
 
 					<field name="name"/>
+					<field name="cantidad"/>
 					<field name="type"/>
 					<field name="planeta"/>
 					<field name="jugador"/>
-					<field name="cantidad"/>
-
-
 
 				</tree>
 			</field>
