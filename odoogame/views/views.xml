@@ -84,6 +84,7 @@
     <record model="ir.actions.act_window" id="odoogame.action_hangar_tail_defense">
       <field name="name">Cola de construcción: Defensas</field>
       <field name="res_model">odoogame.hangar_tail_defense</field>
+      <field name="context">{'default_parent_id': active_id}</field>
       <field name="view_mode">tree,form</field>
     </record>
 

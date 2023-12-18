@@ -722,7 +722,10 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	name = fields.Char(string='Nombre', compute='set_name')
 
 	# relacion: Elemento a contruir "es de 1 tipo"...
-	defensa = fields.Many2one('odoogame.constructed_defense', ondelete='cascade', help='Apunta a las defensas de cierto tipo construidas en un determinado planeta')
+	defensa = fields.Many2many('odoogame.constructed_defense'
+							  
+							  , ondelete='cascade'
+							  , help='Apunta a las defensas de cierto tipo construidas en un determinado planeta')
 	planeta = fields.Many2one(related='defensa.planeta')
 	cantidad = fields.Integer(default=1)
 	max = fields.Integer(compute='_compute_costes')
@@ -737,6 +740,9 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	coste_plata = fields.Float(string='Coste de Plata', compute='_compute_costes')
 	coste_oro = fields.Float(string='Coste de Oro', compute='_compute_costes')
 
+
+
+	
 	@api.constrains('cantidad')
 	def _constrain_recursos_necesarios(self):
 		for f in self:
