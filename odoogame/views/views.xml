@@ -56,7 +56,7 @@
       <field name="name">Gestión Naves Construidos</field>
       <field name="res_model">odoogame.constructed_starship</field>
       <field name="context">{'search_default_group_by_player':1,
-                              'search_default_group_by_planet':1}</field>
+        'search_default_group_by_planet':1}</field>
 
       <field name="view_mode">tree,form</field>
     </record>
@@ -67,7 +67,7 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-        <record model="ir.actions.act_window" id="odoogame.action_defense_type">
+    <record model="ir.actions.act_window" id="odoogame.action_defense_type">
       <field name="name">Gestión Tipos de Defensas</field>
       <field name="res_model">odoogame.defense_type</field>
       <field name="view_mode">tree,form,kanban</field>
@@ -77,7 +77,7 @@
       <field name="name">Gestión Defensas Construidas</field>
       <field name="res_model">odoogame.constructed_defense</field>
       <field name="context">{'search_default_group_by_player':1,
-                              'search_default_group_by_planet':1}</field>
+        'search_default_group_by_planet':1}</field>
       <field name="view_mode">tree,form</field>
     </record>
 
@@ -94,7 +94,7 @@
       <field name="view_mode">tree,form,calendar</field>
     </record>
 
-        <record model="ir.actions.act_window" id="odoogame.action_flotas">
+    <record model="ir.actions.act_window" id="odoogame.action_flotas">
       <field name="name">Flotaaaa</field>
       <field name="res_model">odoogame.flota</field>
       <field name="view_mode">tree,form</field>
@@ -133,18 +133,25 @@
     <menuitem name="Fuerzas estelares" id="odoogame.menu_naves" parent="odoogame.menu_root"/>
 
     <!-- actions -->
-    <menuitem name="Servidores" id="odoogame.menu_gestion_server" parent="odoogame.menu_gestion"
-              action="odoogame.action_server"/>
+
     <menuitem name="Jugadores" id="odoogame.menu_gestion_player" parent="odoogame.menu_gestion"
               action="odoogame.action_player"/>
     <menuitem name="Planetas" id="odoogame.menu_gestion_planet" parent="odoogame.menu_gestion"
               action="odoogame.action_planet"/>
     <menuitem name="Misiones" id="odoogame.menu_gestion_battle" parent="odoogame.menu_gestion"
               action="odoogame.action_battle"/>
+
+
+
+    <menuitem name="Servidores" id="odoogame.menu_gestion_server" parent="odoogame.menu_gestion"
+              action="odoogame.action_server"/>
     <menuitem name="Galaxias" id="odoogame.menu_gestion_galaxy" parent="odoogame.menu_gestion"
               action="odoogame.action_galaxy"/>
     <menuitem name="Estrellas" id="odoogame.menu_gestion_star" parent="odoogame.menu_gestion"
               action="odoogame.action_star"/>
+
+
+
 
 
 

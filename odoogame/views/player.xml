@@ -6,6 +6,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="puntos_honor_batalla"/>
                     <field name="description"/>
                     <field name="red_social"/>
                     <field name="server"/>
@@ -40,6 +41,7 @@
                             <group>
                                 <field name="icon" widget="image" class="oe_avatar"/>
                                 <field name="red_social"/>
+                                <field name="puntos_honor_batalla"/>
                             </group>
                         </group>
 
@@ -96,6 +98,7 @@
                     <field name="id" /> <!-- És important afegir el id per al record.id.value -->
                     <field name="icon" />
                     <field name="description" />
+                    <field name="puntos_honor_batalla" />
 
                     <templates>
 
@@ -110,6 +113,7 @@
                                     <h4>
                                         <a type="edit">
                                             <field name="name"></field>
+                                            <field name="puntos_honor_batalla"></field>
                                         </a>
                                     </h4>
                                     <ul>
@@ -122,6 +126,20 @@
 
                     </templates>
                 </kanban>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="odoogame.player_search">
+            <field name="name">Filtros Player</field>
+            <field name="model">odoogame.player</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="description" string="Name and description"
+                           filter_domain="['|', ('name', 'ilike', self), ('description', 'ilike', self)]"/>
+                    <field name="server"/>
+                    <filter name="mes_de_50_punts" string="Mes de 50 punts d'honor" domain="[('puntos_honor_batalla','>',50)]"/>
+                <field name="puntos_honor_batalla" string="Mes de x punts d'honor" filter_domain="[('puntos_honor_batalla','&gt;',self)]"/>
+                </search>
             </field>
         </record>
 

@@ -3,13 +3,13 @@
 
 
 
-        <record model="ir.ui.view" id="odoogame.battle_calendar">
-            <field name="name">Calendario Batallas</field>
+        <record model="ir.ui.view" id="odoogame.mission_calendar">
+            <field name="name">Calendario Misiones</field>
             <field name="model">odoogame.mission</field>
             <field name="arch" type="xml">
                 <calendar string="Session Calendar"
-                          date_start="salida"
-                          date_delay="llegada"
+                          date_start="fecha_salida"
+                          date_stop="fecha_llegada"
                           color="type">
                     <field name="jugador"/>
                     <field name="origen"/>
@@ -27,8 +27,8 @@
                     <field name="jugador"/>
                     <field name="origen"/>
                     <field name="destino"/>
-                    <field name="salida"/>
-                    <field name="llegada"/>
+                    <field name="fecha_salida"/>
+                    <field name="fecha_llegada"/>
                     <field name="retorno"/>
                     <field name="type"/>
 
@@ -52,8 +52,8 @@
 
                             </group>
                             <group>
-                                <field name="salida"/>
-                                <field name="llegada"/>
+                                <field name="fecha_salida"/>
+                                <field name="fecha_llegada"/>
                                 <field name="retorno"/>
                             </group>
 

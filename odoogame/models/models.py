@@ -9,6 +9,7 @@ import math
 
 from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
+import logging
 
 
 class server(models.Model):
@@ -180,8 +181,9 @@ class planet(models.Model):
 
 	def _get_naves_planeta(self):
 		for planet in self:
-			self.naves = self.env['odoogame.constructed_starship']\
+			lista = self.env['odoogame.constructed_starship']\
 				.search([('flota.ubi_actual.id', '=', planet.id)])
+			planet.naves = lista.sorted(key=lambda r: r.cantidad, reverse=True)
 
 	def crear_edificio(self):
 		for p in self:
@@ -710,10 +712,9 @@ class constructed_defense(models.Model):
 
 	@api.depends('type', 'planeta')
 	def set_name(self):
-		print("Nueva instancia 'constructed_defense'")
 		for f in self:
 			f.name = str(f.planeta.name) + " - " + str(f.type.name)
-			print("Nombre: ", str(f.type.name))
+			
 
 
 class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a contruir
@@ -857,13 +858,15 @@ class mission(models.Model):
 	
 	name = fields.Char(compute='_set_name', readonly=True)
 	jugador = fields.Many2one('odoogame.player', 'Jugador', default=lambda self: self._get_default())
+	llegada = fields.Boolean(default=False, readonly=True)
+	retorno = fields.Boolean(default=False, readonly=True)
 	
 	origen = fields.Many2one('odoogame.planet', string='Origen', domain="[('jugador', '=', jugador)]", default=lambda self: self._get_default())
 	destino = fields.Many2one('odoogame.planet', string='Destino')
 
-	salida = fields.Datetime(string='Inicio', default=lambda self: fields.Datetime.now())
-	llegada = fields.Datetime(string='Llegada', compute='compute_dates')
-	retorno = fields.Datetime(string='Retorno', compute='compute_dates')
+	fecha_salida = fields.Datetime(string='Inicio', default=lambda self: fields.Datetime.now())
+	fecha_llegada = fields.Datetime(string='Llegada', compute='compute_dates')
+	fecha_retorno = fields.Datetime(string='Retorno', compute='compute_dates')
 
 	type = fields.Selection([('1', 'Transporte'), ('2', 'Despliegue'), ('3', 'Espiar'),
 	                           ('4', 'Atacar'), ('5', 'Colonizar'), ('6', 'Mantener posición')],
@@ -872,7 +875,7 @@ class mission(models.Model):
 							,domain="[('jugador', '=', jugador)]")
 	subflota = fields.Many2many('odoogame.form_subflota', computed="form_flota",)#default=lambda self: self._get_default())
 	
-	@api.model  # al crear una instancia del modelo se restan los recursos del planeta. No modificar una vez creada (bug)
+	@api.model
 	def create(self, values):
 		new_id = super(mission, self).create(values)
 		
@@ -939,95 +942,121 @@ class mission(models.Model):
 	def _set_name(self):
 		for f in self:
 			f.name = str(f.type) + " - " + str(f.origen) + " - " + str(f.destino)
-	@api.depends('salida')
+	
+	@api.depends('fecha_salida')
 	def compute_dates(self):
 		for f in self:
+			_logger = logging.getLogger('odoogame.mission')
 			tiempo_desplazamiento = 3
-			salida = fields.Datetime.from_string(f.salida)
-			f.llegada = fields.Datetime.to_string(salida + timedelta(minutes=tiempo_desplazamiento))
-			f.retorno = fields.Datetime.to_string(salida + timedelta(minutes=tiempo_desplazamiento * 2))
+			salida = fields.Datetime.from_string(f.fecha_salida)
+			
+			# Agregar log para imprimir la fecha de salida
+			_logger.info(f"Fecha de salida: {salida}")
+			
+			f.fecha_llegada = fields.Datetime.to_string(salida + timedelta(minutes=tiempo_desplazamiento))
+			
+			# Agregar log para imprimir la fecha de llegada
+			_logger.info(f"Fecha de llegada: {fields.Datetime.from_string(f.fecha_llegada)}")
+			
+			f.fecha_retorno = fields.Datetime.to_string(salida + timedelta(minutes=tiempo_desplazamiento * 2))
+			
+			# Agregar log para imprimir la fecha de retorno
+			_logger.info(f"Fecha de retorno: {fields.Datetime.from_string(f.fecha_retorno)}")
 	
 	@api.model
 	def cron_update_mission(self):
 		for mision in self.search([]):
-			if fields.Datetime.now() > mision.llegada:
-				
-				
-				defensas_defensor = self.env['odoogame.constructed_defenses'].search([('planeta', '=', mision.destino)])
-				naves_defensor = self.env['odoogame.flota'].search([('ubi_actual', '=', mision.destino)])
-				
-				ataque_defensor = 0
-				defensa_defensor = 0
-				ataque_atacante = 0
-				defensa_atacante = 0
-				
-				for dd in defensas_defensor:
-					ataque_defensor += dd.type.ataque
-					defensa_defensor += dd.type.defensa
-				for dd in naves_defensor:
-					ataque_defensor += dd.type.ataque
-					defensa_defensor += dd.type.defensa
+			if fields.Datetime.now() > mision.fecha_llegada and not mision.llegada:
+				mision.llegada = True
+				if mission.type == '4':
 
-				for dd in mision.flota.naves:
-					ataque_atacante += dd.type.ataque
-					defensa_atacante += dd.type.defensa
-
-				puntos_atacante = 0
-				puntos_defensor = 0
-				if (ataque_defensor > ataque_atacante): puntos_defensor += 1
-				if (ataque_defensor > defensa_atacante): puntos_defensor += 2
-				if (ataque_atacante > ataque_defensor): puntos_atacante += 1
-				if (ataque_atacante > defensa_defensor): puntos_atacante += 2
-
-				ganador = None
-				porcentaje_ganado = 50/100
-				if puntos_atacante > puntos_defensor:
-					ganador = mision.destino.jugador
-					ganador.puntos_honor_batalla += 10
-
-					print("Batalla!!. Ha ganado: " + ganador.name)
+					defensas_defensor = self.env['odoogame.constructed_defense'].search([('planeta', '=', mision.destino.id)])
+					flotas_defensor = self.env['odoogame.flota'].search([('ubi_actual', '=', mision.destino.id)])
 					
-					metal_ganado = mision.destino.metal * porcentaje_ganado
-					cobre_ganado = mision.destino.cobre * porcentaje_ganado
-					plata_ganado = mision.destino.plata * porcentaje_ganado
-					oro_ganado = mision.destino.oro * porcentaje_ganado
-					deuterio_ganado = mision.destino.deuterio * porcentaje_ganado
-					fosiles_ganado = mision.destino.fosiles * porcentaje_ganado
-
-					mision.destino.metal -= metal_ganado
-					mision.destino.cobre -= cobre_ganado
-					mision.destino.plata -= plata_ganado
-					mision.destino.oro -= oro_ganado
-					mision.destino.deuterio -= deuterio_ganado
-					mision.destino.fosiles -= fosiles_ganado
-
-					mision.origen.metal += metal_ganado
-					mision.origen.cobre += cobre_ganado
-					mision.origen.plata += plata_ganado
-					mision.origen.oro += oro_ganado
-					mision.origen.deuterio += deuterio_ganado
-					mision.origen.fosiles += fosiles_ganado
+					ataque_defensor = 0
+					defensa_defensor = 0
+					ataque_atacante = 0
+					defensa_atacante = 0
 					
-
-					
-				elif puntos_atacante < puntos_defensor:
-					ganador = mision.origen.jugador
-					ganador.puntos_honor_batalla += 10
-					print("Batalla!!. Ha ganado: " + ganador.name)
-					
-				else:
-					mision.origen.jugador.puntos_honor_batalla += 5
-					mision.destino.jugador.puntos_honor_batalla += 5
-					print("Batalla!! Empate ")
-					
-				#Destruccion de recursos según puntos
-				self._destruir_recursos(defensas_defensor, puntos_atacante * 0.06)
-				self._destruir_recursos(naves_defensor, puntos_atacante * 0.06)
-				self._destruir_recursos(mision.flota.naves, puntos_defensor * 0.06)
+					for dd in defensas_defensor:
+						ataque_defensor += dd.type.ataque
+						defensa_defensor += dd.type.defensa
+					for flota in flotas_defensor:
+						naves = self.env['odoogame.constructed_starship'].search([('flota', '=', flota.id)])
+						for nave in naves:
+							ataque_defensor += nave.type.ataque
+							defensa_defensor += nave.type.defensa
+	
+					for flota in mision.flota:
+						for nave in flota.naves:
+							ataque_atacante += nave.type.ataque
+							defensa_atacante += nave.type.defensa
+	
+					puntos_atacante = 0
+					puntos_defensor = 0
+					if (ataque_defensor > ataque_atacante): puntos_defensor += 1
+					if (ataque_defensor > defensa_atacante): puntos_defensor += 2
+					if (ataque_atacante > ataque_defensor): puntos_atacante += 1
+					if (ataque_atacante > defensa_defensor): puntos_atacante += 2
+	
+					ganador = None
+					porcentaje_ganado = 50/100
+					if puntos_atacante > puntos_defensor:
+						ganador = mision.jugador
+						perdedor = mision.destino.jugador
+						ganador.puntos_honor_batalla += 10
+						
+						print("Batalla!!. Ha ganado: " + ganador.name)
+						
+						hierro_ganado = mision.destino.hierro * porcentaje_ganado
+						cobre_ganado = mision.destino.cobre * porcentaje_ganado
+						plata_ganado = mision.destino.plata * porcentaje_ganado
+						oro_ganado = mision.destino.oro * porcentaje_ganado
+						deuterio_ganado = mision.destino.deuterio * porcentaje_ganado
+						fosiles_ganado = mision.destino.fosiles * porcentaje_ganado
+	
+						mision.destino.hierro -= hierro_ganado
+						mision.destino.cobre -= cobre_ganado
+						mision.destino.plata -= plata_ganado
+						mision.destino.oro -= oro_ganado
+						mision.destino.deuterio -= deuterio_ganado
+						mision.destino.fosiles -= fosiles_ganado
+	
+						mision.origen.hierro += hierro_ganado
+						mision.origen.cobre += cobre_ganado
+						mision.origen.plata += plata_ganado
+						mision.origen.oro += oro_ganado
+						mision.origen.deuterio += deuterio_ganado
+						mision.origen.fosiles += fosiles_ganado
+						print("recursos extraidos:", hierro_ganado)
+						print("recursos extraidos:", cobre_ganado)
+						print("recursos extraidos:", oro_ganado)
+						print("recursos extraidos:", plata_ganado)
+	
+						
+					elif puntos_atacante < puntos_defensor:
+						ganador = mision.destino.jugador
+						perdedor = mision.jugador
+						ganador.puntos_honor_batalla += 10
+						print("Batalla!!. Ha ganado: " + ganador.name)
+						
+					else:
+						mision.origen.jugador.puntos_honor_batalla += 5
+						mision.destino.jugador.puntos_honor_batalla += 5
+						print("Batalla!! Empate ")
+						
+					#Destruccion de recursos según puntos
+					self._destruir_recursos(defensas_defensor, puntos_atacante * 0.06)
+					self._destruir_recursos(flotas_defensor.naves, puntos_atacante * 0.06)
+					self._destruir_recursos(mision.flota.naves, puntos_defensor * 0.06)
+			
+			if fields.Datetime.now() > mision.fecha_retorno and not mision.retorno:
+				mision.retorno = True
+				#Reintegracion de flota en la flota del planeta
 				
 	def _destruir_recursos(self, recordset, porcentaje : float):
 		for recurso in recordset:
-			recurso.unidades -= recurso.unidades * porcentaje
+			recurso.cantidad -= recurso.cantidad * porcentaje
 	
 	@api.constrains('origen', 'destino')
 	def _constrain_origen_vs_destino(self):
