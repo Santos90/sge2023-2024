@@ -6,8 +6,15 @@
 
     <record model="ir.actions.act_window" id="odoogame.action_player">
       <field name="name">Gestión jugadores</field>
-      <field name="res_model">odoogame.player</field>
+      <field name="res_model">res.partner</field>
       <field name="view_mode">tree,form,kanban</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+      (0, 0, {'view_mode': 'tree', 'view_id': ref('odoogame.player_tree')}),
+      (0, 0, {'view_mode': 'form', 'view_id': ref('odoogame.player_form')}),
+      (0, 0, {'view_mode': 'kanban', 'view_id': ref('odoogame.player_kanban')}),
+      ]" />
+
+      <field name="context">{'default_is_player': True, 'search_default_player_partner': 1}</field>
     </record>
 
     <record model="ir.actions.act_window" id="odoogame.action_server">

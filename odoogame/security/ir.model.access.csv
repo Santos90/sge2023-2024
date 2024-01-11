@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_odoogame_player,odoogame.player,model_odoogame_player,base.group_user,1,1,1,1
+
 access_odoogame_server,odoogame.server,model_odoogame_server,base.group_user,1,1,1,1
 access_odoogame_galaxy,odoogame.galaxy,model_odoogame_galaxy,base.group_user,1,1,1,1
 access_odoogame_star,odoogame.star,model_odoogame_star,base.group_user,1,1,1,1
@@ -15,6 +15,8 @@ access_odoogame_flota,odoogame.flota,model_odoogame_flota,base.group_user,1,1,1,
 
 access_odoogame_defense_type,odoogame.defense_type,model_odoogame_defense_type,base.group_user,1,1,1,1
 access_odoogame_constructed_defense,odoogame.constructed_defense,model_odoogame_constructed_defense,base.group_user,1,1,1,1
+access_odoogame_constructed_defense_wizard,odoogame.constructed_defense_wizard,model_odoogame_constructed_defense_wizard,base.group_user,1,1,1,1
+
 
 access_odoogame_planet_img,odoogame.planet_img,model_odoogame_planet_img,base.group_user,1,1,1,1
 access_odoogame_form_subflota,odoogame.form_subflota,model_odoogame_form_subflota,base.group_user,1,1,1,1
@@ -22,3 +24,5 @@ access_odoogame_form_subflota,odoogame.form_subflota,model_odoogame_form_subflot
 access_odoogame_hangar_tail_defense,odoogame.hangar_tail_defense,model_odoogame_hangar_tail_defense,base.group_user,1,1,1,1
 access_odoogame_hangar_tail_starship,odoogame.hangar_tail_starship,model_odoogame_hangar_tail_starship,base.group_user,1,1,1,1
 access_odoogame_mission,odoogame.mission,model_odoogame_mission,base.group_user,1,1,1,1
+
+

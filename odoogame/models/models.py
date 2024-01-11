@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# https://github.com/xxjcaxx
 
 import random
 import sys
@@ -18,26 +17,28 @@ class server(models.Model):
 
 	name = fields.Char(required=True)
 	# Rel 0. Un servidor tiene muchos jugadores
-	players = fields.One2many('odoogame.player', 'server', "Jugadores", ondelete='restrict')
+	players = fields.One2many('res.partner', 'servidor', "Jugadores", ondelete='restrict')
 
 
 class player(models.Model):
-	_name = 'odoogame.player'
+	_name = 'res.partner'
+	_inherit = 'res.partner'
 	_description = 'Usuarios del juego.'
 	
-	name = fields.Char(required=True, size=24)
+	#name = fields.Char(required=True, size=24)
+	is_player = fields.Boolean(default=False)
 	# Rel 0. Un servidor tiene muchos jugadores
-	server = fields.Many2one('odoogame.server', string="Servidor")
+	servidor = fields.Many2one('odoogame.server', string="Servidor")
 	incorporacion_al_servidor = fields.Date(readonly=True)  # create
 	red_social = fields.Html()
 	description = fields.Text(string="Descripción")
 	icon = fields.Image(max_width=300, max_height=300, string=" ")
 	
 	# Rel 3. Un jugador ocupa palnetas
-	amigos =fields.Many2many('odoogame.player',
-								relation = 'friends',  # (opcional) el nom del la taula en mig
-								column1 = 'friend1',  # (opcional) el nom en la taula en mig de la columna d'aquest model
-								column2 = 'friend2')  # (opcional) el nom de la columna de l'altre model.
+	amigos = fields.Many2many('res.partner',
+		relation = 'friends',  # (opcional) el nom del la taula en mig
+		column1 = 'friend1',  # (opcional) el nom en la taula en mig de la columna d'aquest model
+		column2 = 'friend2')  # (opcional) el nom de la columna de l'altre model.
 	
 	planetas = fields.One2many('odoogame.planet', 'jugador', 'Planetas')
 	flotas = fields.One2many('odoogame.flota', 'jugador')
@@ -54,7 +55,7 @@ class player(models.Model):
 	
 	
 	
-	@api.model
+
 	@api.model
 	def create(self, values):
 		new_player = super(player, self).create(values)
@@ -160,7 +161,7 @@ class planet(models.Model):
 	# Rel 2. Una estrella tiene muchos planetas
 	star = fields.Many2one('odoogame.star', string='Estrella', delegate=False)
 	# Rel 3. Un jugador ocupa palnetas
-	jugador = fields.Many2one('odoogame.player', string='Propietario', delegate=False, ondelete='cascade')
+	jugador = fields.Many2one('res.partner', string='Propietario', delegate=False, ondelete='cascade')
 	# Related. En quina galaxia está el planeta
 	galaxy = fields.Many2one('odoogame.galaxy', string='Galaxia', related='star.galaxy', store=True, readonly=True)
 
@@ -714,8 +715,16 @@ class constructed_defense(models.Model):
 	def set_name(self):
 		for f in self:
 			f.name = str(f.planeta.name) + " - " + str(f.type.name)
-			
 
+
+	def new_building(self):
+		return {
+			'type': 'ir.actions.act_window',
+			'res_model': 'odoogame.constructed_defense_wizard',
+			'view_mode': 'form',
+			'target': 'new',
+			'context': {'planet_context': self.id}
+		}
 
 class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a contruir
 	_name = 'odoogame.hangar_tail_defense'
@@ -833,7 +842,7 @@ class flota(models.Model):
 	_description = 'Flota de un jugador en un planeta'
 	
 	name = fields.Char(compute='_set_name', readonly=True)
-	jugador = fields.Many2one('odoogame.player', 'Jugador')
+	jugador = fields.Many2one('res.partner', 'Jugador')
 	ubi_actual = fields.Many2one('odoogame.planet', string='Ubicación')
 	naves = fields.One2many('odoogame.constructed_starship', 'flota', string='Naves')
 	mision = fields.Many2one('odoogame.mission')
@@ -857,7 +866,7 @@ class mission(models.Model):
 	_description = 'Flota desplazándose con un objetivo o misión'
 	
 	name = fields.Char(compute='_set_name', readonly=True)
-	jugador = fields.Many2one('odoogame.player', 'Jugador', default=lambda self: self._get_default())
+	jugador = fields.Many2one('res.partner', 'Jugador', default=lambda self: self._get_default())
 	llegada = fields.Boolean(default=False, readonly=True)
 	retorno = fields.Boolean(default=False, readonly=True)
 	
@@ -894,7 +903,7 @@ class mission(models.Model):
 		return new_id
 	@api.model
 	def _get_default(self):
-		jugador =  self.env['odoogame.player'].search([], limit=1)
+		jugador =  self.env['res.partner'].search([], limit=1)
 		origen = self.env['odoogame.planet'].search([('jugador', '=', jugador.id)], limit=1)
 		
 		for f in self:

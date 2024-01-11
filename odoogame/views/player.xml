@@ -1,15 +1,15 @@
 <odoo>
     <data>
-        <record model="ir.ui.view" id="odoogame.players_list">
+        <record model="ir.ui.view" id="odoogame.player_tree">
             <field name="name">Player list</field>
-            <field name="model">odoogame.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
                     <field name="puntos_honor_batalla"/>
                     <field name="description"/>
                     <field name="red_social"/>
-                    <field name="server"/>
+                    <field name="servidor"/>
                     <field name="incorporacion_al_servidor"/>
 
                     <field name="planetas"/>
@@ -26,7 +26,7 @@
 
         <record model="ir.ui.view" id="odoogame.player_form">
             <field name="name">Player form</field>
-            <field name="model">odoogame.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <form string="Course Form">
                     <sheet>
@@ -36,6 +36,7 @@
                                 <field name="name"/>
                                 <field name="description"/>
                                 <field name="incorporacion_al_servidor"/>
+                                <field name="is_player" />
 
                             </group>
                             <group>
@@ -90,11 +91,12 @@
 
         <record model="ir.ui.view" id="odoogame.player_kanban">
             <field name="name">Jugadores</field>
-            <field name="model">odoogame.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <kanban >
                     <!--list of field to be loaded -->
                     <field name="name" />
+
                     <field name="id" /> <!-- És important afegir el id per al record.id.value -->
                     <field name="icon" />
                     <field name="description" />
@@ -107,7 +109,7 @@
                                 <a type="open">
                                     <img class="oe_kanban_image"
                                          t-att-alt="record.name.value"
-                                         t-att-src="kanban_image('odoogame.player', 'icon', record.id.value)" />
+                                         t-att-src="kanban_image('res.partner', 'icon', record.id.value)" />
                                 </a>
                                 <div class="oe_product_desc">
                                     <h4>
@@ -131,14 +133,16 @@
 
         <record model="ir.ui.view" id="odoogame.player_search">
             <field name="name">Filtros Player</field>
-            <field name="model">odoogame.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <search>
                     <field name="description" string="Name and description"
                            filter_domain="['|', ('name', 'ilike', self), ('description', 'ilike', self)]"/>
-                    <field name="server"/>
+                    <field name="servidor"/>
                     <filter name="mes_de_50_punts" string="Mes de 50 punts d'honor" domain="[('puntos_honor_batalla','>',50)]"/>
+                <filter name="player_partner" string="Is Player" domain="[('is_player','=',True)]" />
                 <field name="puntos_honor_batalla" string="Mes de x punts d'honor" filter_domain="[('puntos_honor_batalla','&gt;',self)]"/>
+
                 </search>
             </field>
         </record>

@@ -84,10 +84,9 @@
                                     </tree>
 
                                 </field>
-
-
                                 <button name="crear_edificio" type="object" string="Create" class="oe_highlight" icon="fa-level-up"/>
                                 <button name="recolectar_recursos" type="object" string="Recolectar recursos" class="oe_highlight" icon="fa-level-up"/>
+
                             </page>
 
                             <page string="Defensas">
@@ -97,7 +96,12 @@
                                     </page>
                                     <page string="En construcción">
                                         <field name="cola_defensas"/>
+                                         <button name="%(odoogame.launch_defense_wizard)d"
+                                            type="action" string="New defense" class="oe_highlight"
+                                            context="{'planet_context': active_id}"
+                                         />
                                     </page>
+
 
                                 </notebook>
 
@@ -152,10 +156,10 @@
 
                                         </li>
 
-                                            <field name="oro" editable="true"/>
-                                            <field name="plata" editable="true"/>
-                                            <field name="cobre" editable="true"/>
-                                            <field name="hierro" editable="true"/>
+                                        <field name="oro" editable="true"/>
+                                        <field name="plata" editable="true"/>
+                                        <field name="cobre" editable="true"/>
+                                        <field name="hierro" editable="true"/>
 
                                     </ul>
                                 </div>

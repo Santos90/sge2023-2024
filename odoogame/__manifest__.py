@@ -30,10 +30,11 @@
         'views/building_type.xml',
         'views/defense_type.xml',
         'views/starship_type.xml',
-        'views/planet.xml',
+
         'views/constructed_building.xml',
         'views/constructed_starship.xml',
         'views/constructed_defense.xml',
+        'views/planet.xml',
         'views/player.xml',
         'views/battle.xml',
         'views/views.xml',

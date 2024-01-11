@@ -1,5 +1,5 @@
 <odoo>
-    <record id="odoogame_init_Server"  model="odoogame.server">
+    <record id="odoogame_init_server"  model="odoogame.server">
         <field name="name">Server01</field>
     </record>
     <record id="odoogame_galaxia_via_lactea"  model="odoogame.galaxy">
@@ -11,9 +11,10 @@
         <field name="galaxy" ref="odoogame_galaxia_via_lactea"/>
     </record>
 
-
-    <record model="odoogame.player" id="odoogame_player_xxjcaxx">
+    <record id="odoogame_player_jose" model="res.partner">
         <field name="name">xxjcaxx</field>
+        <field name="is_player">True</field>
+        <field name="servidor" ref="odoogame_init_server"/>
         <field name="incorporacion_al_servidor" eval="(datetime.now()+timedelta(-1)).strftime('%Y-%m-%d')"/>
         <field name="icon">iVBORw0KGgoAAAANSUhEUgAAAcwAAAHMCAIAAADXuQ/RAAAPa0lEQVR4nOzdb6ie913H8ZwtZ121
             zR/ao+ufnSRt1mLLSl1R2yaNjYExmMYOZgeKMEboGMEHFuYDQZI8Uib4RESUKIWh0FowyzYZ0y0u
@@ -86,6 +87,14 @@
             n2p4tpXxvMK2leJ9t/XDs8VrZUP8xzlZWt2t29R9zNabLECQyAIEiSxAkMgCBIksQJDIAgS1OOpw
             1OSKiRY6HnfpBllyWt2t2zTqAMb60S5vsgBBIgsQJLIAQSILECSyAEEiCxD0PwEAAP//Q+JfzsqL
             Kr8AAAAASUVORK5CYII=</field>
+
+    </record>
+
+    <record id="odoogame_player_pau" model="res.partner">
+        <field name="name">Pau</field>
+        <field name="is_player">True</field>
+        <field name="servidor" ref="odoogame_init_server"/>
+
     </record>
 
 
@@ -98,7 +107,7 @@
         <field name="plata">30000</field>
         <field name="oro">20000</field>
         <field name="star" ref="odoogame_star_sol"/>
-        <field name="jugador" ref="odoogame_player_xxjcaxx"/>
+        <field name="jugador" ref="odoogame_player_jose"/>
     </record>
 
     <record id="odoogame_planeta_venus"  model="odoogame.planet">
@@ -117,7 +126,7 @@
         <field name="plata">30000</field>
         <field name="oro">20000</field>
         <field name="star" ref="odoogame_star_sol"/>
-        <field name="jugador" ref="odoogame_player_xxjcaxx"/>
+        <field name="jugador" ref="odoogame_player_jose"/>
     </record>
 
     <record id="odoogame_planeta_marte"  model="odoogame.planet">
