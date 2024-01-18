@@ -68,13 +68,7 @@
 			</field>
 		</record>
 
-        <record id="odoogame.launch_defense_wizard" model="ir.actions.act_window">
-            <field name="name">Launch building</field>
-            <field name="res_model">odoogame.constructed_defense_wizard</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-            <field name="binding_model_id" ref="model_odoogame_constructed_building"/>
-        </record>
+
 
 
 

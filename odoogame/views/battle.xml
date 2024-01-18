@@ -83,6 +83,63 @@
             </field>
         </record>
 
+        <!-- ******* WIZARDS ***************** -->
+
+        <record model="ir.ui.view" id="odoogame.add_mission_wizard_view">
+            <field name="name">Añadir defensa</field>
+            <field name="model">odoogame.add_mission_wizard</field>
+            <field name="arch" type="xml">
+                <form >
+                    <header>
+                        <button name="action_previous" type="object"
+                                string="Previous" states="units,dates"
+                        />
+                        <button name="action_next" type="object"
+                                string="Next"
+                                states="planets,units"
+                                class="oe_highlight"/>
+                        Selection: <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group states="planets">
+
+                            <field name="jugador"/>
+                            <field name="origen"/>
+                            <field name="destino"/>
+
+
+                        </group>
+
+                        <group states="units">
+                            <field name="flota"/>
+
+                        </group>
+
+                        <group states="dates">
+                            <field name="type"/>
+                            <field name="fecha_salida"/>
+                            <field name="fecha_llegada"/>
+                            <field name="fecha_retorno"/>
+
+                        </group>
+
+                    </sheet>
+                    <footer>
+                        <button name="create_mission_wizard" type="object"
+                                string="Crear Misión" class="oe_highlight"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="odoogame.launch_add_mission_wizard" model="ir.actions.act_window">
+            <field name="name">Planificación de misión</field>
+            <field name="res_model">odoogame.add_mission_wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
 
 
     </data>

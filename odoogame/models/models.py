@@ -169,6 +169,7 @@ class planet(models.Model):
 	edificios = fields.One2many('odoogame.constructed_building', 'planeta', string="Edificios construidos", ondelete='cascade')
 	flotas = fields.One2many('odoogame.flota', 'ubi_actual', string="Flotas en órbita" , ondelete='cascade' )
 	naves = fields.Many2many('odoogame.constructed_starship', compute='_get_naves_planeta')
+	misiones = fields.One2many('odoogame.mission', 'origen', string="Misiones operativas", ondelete='restrict')
 
 	defensas = fields.One2many('odoogame.constructed_defense', 'planeta', string="Defensas construidas", ondelete='cascade' )
 	cola_defensas = fields.One2many('odoogame.hangar_tail_defense', 'planeta', string="Defensas en construcción", ondelete='cascade' )
@@ -701,15 +702,17 @@ class constructed_defense(models.Model):
 	_description = 'Estructuras defensivas construidas'
 
 	name = fields.Char(string='Nombre', compute='set_name')
+
 	type = fields.Many2one('odoogame.defense_type', string="Tipo de defensa")
+	planeta = fields.Many2one('odoogame.planet', string='Planeta', ondelete='cascade')
+	cantidad = fields.Integer(string='Unidades', default=0)  # , readonly=True)
+	vida_actual = fields.Float(string='Vida actual')
+
 	icon = fields.Image(max_width=300, max_height=300, related='type.icon', string=" ")
 	jugador = fields.Many2one(related="planeta.jugador", string="jugador")
+
 	# Rel 4
 	defensas_en_construccion = fields.One2many('odoogame.hangar_tail_defense', 'defensa')
-	planeta = fields.Many2one('odoogame.planet', string='Planeta', ondelete='cascade')
-	cantidad = fields.Integer(string='Unidades', default=0)#, readonly=True)
-
-	vida_actual = fields.Float(string='Vida actual')
 
 	@api.depends('type', 'planeta')
 	def set_name(self):
@@ -732,10 +735,11 @@ class hangar_tail_defense(models.Model):  # Nombre para relaciones: Elemento a c
 	name = fields.Char(string='Nombre', compute='set_name')
 
 	# relacion: Elemento a contruir "es de 1 tipo"...
-	defensa = fields.Many2many('odoogame.constructed_defense'
-							  
-							  , ondelete='cascade'
-							  , help='Apunta a las defensas de cierto tipo construidas en un determinado planeta')
+	defensa = fields.Many2many(
+		'odoogame.constructed_defense',
+		ondelete='cascade',
+		help='Apunta a las defensas de cierto tipo construidas en un determinado planeta'
+	)
 	planeta = fields.Many2one(related='defensa.planeta')
 	cantidad = fields.Integer(default=1)
 	max = fields.Integer(compute='_compute_costes')

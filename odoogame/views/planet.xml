@@ -96,22 +96,34 @@
                                     </page>
                                     <page string="En construcción">
                                         <field name="cola_defensas"/>
-                                         <button name="%(odoogame.launch_defense_wizard)d"
+
+
+                                    </page>
+                                    <button name="%(odoogame.launch_defense_wizard)d"
                                             type="action" string="New defense" class="oe_highlight"
                                             context="{'planet_context': active_id}"
-                                         />
-                                    </page>
-
+                                    />
 
                                 </notebook>
 
                             </page>
+
+
 
                             <page string="Flotas">
                                 <field name="flotas"/>
                             </page>
                             <page string="Naves">
                                 <field name="naves"/>
+                            </page>
+
+                            <page string="Misiones">
+                                <field name="misiones"/>
+                                <button name="%(odoogame.launch_add_mission_wizard)d"
+                                            type="action" string="New Mission" class="oe_highlight"
+                                            context="{'planet_context': active_id}"
+                                    />
+
                             </page>
 
                         </notebook>
