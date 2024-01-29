@@ -50,7 +50,7 @@ class add_mission_wizard(models.TransientModel):
 
 	jugador = fields.Many2one('res.partner', 'Jugador')
 
-	origen = fields.Many2one('odoogame.planet', string='Origen', domain="[('jugador', '=', jugador)]")
+	origen = fields.Many2one('odoogame.planet', string='Origen', domain="[('jugador', '=', jugador)]", default=_get_default_planet)
 	destino = fields.Many2one('odoogame.planet', string='Destino')
 
 	fecha_salida = fields.Datetime(string='Inicio', default=lambda self: fields.Datetime.now())
@@ -60,8 +60,7 @@ class add_mission_wizard(models.TransientModel):
 	type = fields.Selection([('1', 'Transporte'), ('2', 'Despliegue'), ('3', 'Espiar'),
 					 ('4', 'Atacar'), ('5', 'Colonizar'), ('6', 'Mantener posición')],
 					default='1', string='Misión')
-	flota = fields.One2many('odoogame.flota', 'mision', string='Flota misión'
-					, domain="[('jugador', '=', jugador)]")
+	flota = fields.Many2many('odoogame.transient_subflota', string='Flota misión')
 
 	def create_mission_wizard(self):
 		print(self)
@@ -101,17 +100,17 @@ class add_mission_wizard(models.TransientModel):
 		for f in self:
 			_logger = logging.getLogger('odoogame.mission')
 			tiempo_desplazamiento = 3
+
 			salida = fields.Datetime.from_string(f.fecha_salida)
-
-			# Agregar log para imprimir la fecha de salida
-			_logger.info(f"Fecha de salida: {salida}")
-
 			f.fecha_llegada = fields.Datetime.to_string(salida + timedelta(minutes=tiempo_desplazamiento))
-
-			# Agregar log para imprimir la fecha de llegada
-			_logger.info(f"Fecha de llegada: {fields.Datetime.from_string(f.fecha_llegada)}")
-
 			f.fecha_retorno = fields.Datetime.to_string(salida + timedelta(minutes=tiempo_desplazamiento * 2))
 
-			# Agregar log para imprimir la fecha de retorno
-			_logger.info(f"Fecha de retorno: {fields.Datetime.from_string(f.fecha_retorno)}")
+
+class transient_subflota(models.TransientModel):
+	_name = 'odoogame.transient_subflota'
+	_description = 'Form para mision'
+
+	cant = fields.Integer(readonly=False)
+	disp = fields.Integer(default=0)
+	type = fields.Many2one('odoogame.constructed_starship')
+
