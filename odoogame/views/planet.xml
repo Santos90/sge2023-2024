@@ -99,7 +99,7 @@
 
 
                                     </page>
-                                    <button name="%(odoogame.launch_defense_wizard)d"
+                                    <button name="%(odoogame.add_defense_wizard_view)d"
                                             type="action" string="New defense" class="oe_highlight"
                                             context="{'planet_context': active_id}"
                                     />
